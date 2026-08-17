@@ -1,0 +1,104 @@
+# ASEAN DSE 2026 — Competition Requirements
+
+Status: PHASE 1 research. Compiled from official ASEAN DSE sources (aseandse.org), verified 2026-08-17.
+
+Legend: `CONFIRMED` = stated on official 2026 pages; `UNCERTAIN` = not confirmed for 2026 (from older cycles or unclear); `PROPOSED` = our interpretation/consequence.
+
+---
+
+## 1. Organiser & format
+
+| Requirement | Source | URL | Interpretation | Implementation consequence |
+|---|---|---|---|---|
+| Run by ASEAN Foundation and SAP; regional data-analytics competition for ASEAN youth | The Competition | https://aseandse.org/thecompetition/ | Official body; all submissions via ASEAN DSE website | Keep all official communications via aseandse.org; contact aseandse@aseanfoundation.org |
+| Programme theme 2026: "Navigating Our Future, Together"; references ASEAN 2026, ASCC Blueprint 2030, AEC Blueprint 2030, ASEAN Digital Masterplan 2030 | The Competition | https://aseandse.org/thecompetition/ | Story should tie to ASEAN 2026 vision and Blueprints | Frame FloodResilience ASEAN against ASEAN Digital Masterplan 2030 + ASCC 2030 resilience themes |
+
+## 2. Eligibility
+
+| Requirement | Source | URL | Interpretation | Implementation consequence |
+|---|---|---|---|---|
+| Nationals of the 11 ASEAN member states (Brunei, Cambodia, Indonesia, Lao PDR, Malaysia, Myanmar, Philippines, Singapore, Thailand, Timor-Leste, Viet Nam) | Eligibility | https://aseandse.org/eligibility/ | `CONFIRMED`. Team from Myanmar is eligible. | Verify both teammates hold ASEAN (Myanmar) nationality and valid passport |
+| Age 18–30 | Eligibility | https://aseandse.org/eligibility/ | `CONFIRMED` for current cycle (past years listed 15–30) | Verify ages |
+| Full-time students at an educational institution OR fresh graduates (≤1 yr after graduation) based in the 11 ASEAN countries | Eligibility / The Competition | https://aseandse.org/eligibility/ | `CONFIRMED` | Team members must be enrolled/fresh grads at an institution based in an ASEAN country |
+| Team = two students from the same ASEAN country | The Competition / FAQ | https://aseandse.org/faq/ | `CONFIRMED`. Both represent the same country (Myanmar). | Register both, same country declared |
+| Did not represent their country at Regional Finals in preceding years; were not Top-3 National Finalists in preceding years | Eligibility | https://aseandse.org/eligibility/ | `CONFIRMED` | Confirm prior participation history |
+| One SAC account per team; free | The Competition | https://aseandse.org/thecompetition/ | `CONFIRMED` | Use the single provided SAC account; share credentials between both members carefully |
+
+## 3. The task
+
+| Requirement | Source | URL | Interpretation | Implementation consequence |
+|---|---|---|---|---|
+| Each team develops a data-analytics storyboard/proposal using SAP Analytics Cloud (SAC) | The Competition / FAQ | https://aseandse.org/thecompetition/ | `CONFIRMED`. SAC is mandatory for the storyboard. | All charts in the storyboard must be SAC-generated. Our Python/SvelteKit work feeds SAC-ready datasets, does not replace SAC. |
+| Choose ONE issue in ASEAN across the six selected SDGs | The Competition | https://aseandse.org/thecompetition/ | The six selected SDGs are 2, 3, 6, 11, 12, 13 | SDG 11 (Sustainable Cities) and SDG 13 (Climate Action) are both within the six — eligible. |
+| Gather relevant datasets (from ASEAN DSE suggested list or other reliable sources) | The Competition | https://aseandse.org/datasets/ | `CONFIRMED`; external reliable sources allowed and must be acknowledged | Build full source catalog (data/source_catalog.csv) and cite everything in the storyboard References page |
+| Teams are ADVICED to build an app / prototype as (one of) the solution(s) to improve chances of being shortlisted | The Competition | https://aseandse.org/thecompetition/ | `CONFIRMED` as strong recommendation ("advise ... to get a better chance of being shortlisted") | SvelteKit prototype is justified and should be a core deliverable; if built with SAP Build Apps, a shareable link is required |
+| Storyboard = "proposal" addressing a chosen ASEAN issue | The Competition | https://aseandse.org/thecompetition/ | Analysis must lead to a solution proposal | Keep the decision-support framing (WHERE/WHEN/WHO/WHAT/WHY/WHAT-TO-DO) |
+
+## 4. Storyboard format requirements
+
+| Requirement | Source | URL | Interpretation | Implementation consequence |
+|---|---|---|---|---|
+| Must be PDF, landscape orientation | Data Analytics Storyboard Requirement | https://aseandse.org/data-analytics-storyboard-requirement/ | `CONFIRMED` | Export SAC storyboard to landscape PDF |
+| Max 20 MB | Same | same | `CONFIRMED` | Compress images (each ≤2 MB) |
+| Filename: `ASEAN COUNTRY_TEAM NAME` (e.g. `LAO PDR_TEAM DATA`) | Same | same | `CONFIRMED` | Our filename: `MYANMAR_TEAM_<NAME>.pdf` |
+| Charts/graphs/diagrams clearly visible and readable | Same | same | `CONFIRMED` | Use legible fonts/sizes; no tiny charts |
+| Must comprise charts/graphs/diagrams generated by SAP Analytics Cloud | Same | same | `CONFIRMED` | Every data chart in the storyboard must be a SAC chart. |
+| If an app is developed with SAP Build Apps, include a link where organisers can access it | Same | same | `CONFIRMED` (for SAP Build Apps apps). Our prototype is SvelteKit; the competition statement's "advice" supports any technological product/prototype | Provide a public URL to the deployed SvelteKit prototype (clearly labeled as prototype) |
+| Images capped at 2 MB each | Same | same | `CONFIRMED` | Optimize all images |
+| Max 15 pages INCLUDING cover, EXCLUDING References | Same | same | `CONFIRMED` | 15-page budget for story + solution; references extra |
+| Cover page must include: (1) Storyboard Title, (2) Team Name, (3) Institution, (4) Country represented, (5) SDG(s) to achieve, (6) Brief Storyboard Description | Same | same | `CONFIRMED` | Prepare this exact cover content |
+| Must include References as a closing page | Same | same | `CONFIRMED` | Full reference list with URLs; all datasets cited |
+| Submit during submission period via the submission system; updated storyboard replaces old one | The Competition | https://aseandse.org/submit-storyboard/ | `CONFIRMED` | Track submission window on homepage; submit before deadline |
+
+## 5. Judging criteria (2026)
+
+Source: https://aseandse.org/judging-criteria/ — `CONFIRMED` current cycle.
+
+| Category | Weight | Sub-criteria | Our consequence |
+|---|---|---|---|
+| Problem Definition | 10% | Context (why now), SDG alignment (specific targets/indicators), ASEAN priority alignment (specific work plan), ASEAN/member-state relevance | Explicitly cite SDG 11 targets (e.g., 11.5, 11.b) and SDG 13 (13.1); cite ASEAN work plans (ASCC 2030, ASEAN Disaster Management / AADMER); explain why urban flooding matters now in ASEAN |
+| Analysis & Insights | 25% | Data storytelling (logic, flow, critical thinking), Visualization (effective SAC charts), Accuracy (integrity and credibility of data sources) | Strong narrative flow; every chart answers a question; rigorous sourcing + validation |
+| Relevancy & Impact | 20% | Significance (scale of positive impact), Scalability (replicable across ASEAN), Inclusivity (diverse/underserved populations) | Design as ASEAN-scalable framework; highlight vulnerable/underserved groups (e.g., informal settlements, low-income districts) |
+| Viability | 15% | Implementability (real-world with current tech), Stakeholder analysis (govt/NGO/private roles), Strategy (realistic rollout roadmap) | Stakeholder model + implementation roadmap in docs/ |
+| Innovation | 15% | Originality, Creativity, Future-focus, Integration of AI & digital technology | Risk-scoring framework, ML classification (if supported), interactive digital decision-support prototype, scenario tool |
+| Presentation Delivery | 15% | Clarity, Defense (technical/logic Q&A), Professionalism | Prepare judge Q&A pack; rehearse defense |
+
+## 6. Assessment & advancement flow
+
+| Stage | Source | Interpretation | Consequence |
+|---|---|---|---|
+| Storyboard assessment vs criteria → shortlisted teams → National Finals | The Competition | `CONFIRMED` | National finalists prepare PowerPoint slides (~3–4 weeks) and may present the app |
+| National Finals judged on the slides | The Competition | `CONFIRMED` | Prepare an accompanying PPT deck (separate from storyboard) |
+| Winning national teams advance to Regional Finals (2025 was in Kuala Lumpur; 2026 TBD) | tracker.sg / FAQ | `UNCERTAIN` for 2026 host | Monitor announcements |
+| Available to travel for regional competition | Eligibility | https://aseandse.org/eligibility/ | `CONFIRMED` | Ensure passports/availability |
+
+## 7. Data & citation rules
+
+| Requirement | Source | Interpretation | Consequence |
+|---|---|---|---|
+| Data from given list or other reliable sources; must be clearly acknowledged in submission | UII competition rules (2019) / The Competition | `CONFIRMED` that sources must be acknowledged | data/source_catalog.csv + References page |
+| All submissions in English | UII rules (historical) | `UNCERTAIN` for 2026 (implied; assume English) | Write all deliverables in English |
+| All material original; previously published content properly attributed | UII rules (historical) | Assume applies | Cite everything; avoid plagiarism |
+
+## 8. Deadline / timeline
+
+| Item | Value | Status |
+|---|---|---|
+| Registration period | Announced on aseandse.org homepage | `UNCERTAIN` (check site) |
+| Storyboard submission | Announced; Facebook post referenced a 31st deadline | `UNCERTAIN` — verify on homepage |
+| National Finals | ~3–4 weeks after shortlist notification | `UNCERTAIN` |
+| Regional Finals | Announced | `UNCERTAIN` |
+
+Action: re-verify all deadlines on https://aseandse.org/ before Phase 2.
+
+---
+
+## Summary of hard constraints for our project
+
+1. SAC storyboard is mandatory — SvelteKit is the **solution prototype**, not a replacement for SAC.
+2. Six eligible SDGs include SDG 11 and SDG 13 → project theme valid.
+3. Storyboard: landscape PDF, ≤20 MB, ≤15 pages incl. cover, references on closing page(s), every chart SAC-generated.
+4. Two-member Myanmar team: both must be 18–30, full-time students or fresh grads, same country, one SAC account.
+5. External data allowed but must be cited and reliable.
+6. App/prototype is strongly advised → SvelteKit justified.
+7. Judging weights Analysis & Insights (25%) and Relevancy & Impact (20%) most — invest in real analysis and ASEAN scalability.
