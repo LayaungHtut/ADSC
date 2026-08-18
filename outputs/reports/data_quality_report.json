@@ -1,71 +1,7 @@
 [
   {
-    "dataset": "boundaries_kecamatan",
-    "rows": 42,
-    "columns": 4,
-    "checks": [
-      {
-        "check": "missing_values",
-        "status": "PASS",
-        "detail": "0 columns have missing values; max rate 0.0%"
-      },
-      {
-        "check": "duplicates",
-        "status": "PASS",
-        "detail": "0 duplicate rows"
-      },
-      {
-        "check": "infinite_values",
-        "status": "PASS",
-        "detail": "0 infinite values"
-      },
-      {
-        "check": "outliers_3iqr",
-        "status": "INFO",
-        "detail": "none beyond 3x IQR"
-      }
-    ]
-  },
-  {
-    "dataset": "chirps_monthly_series",
-    "rows": 547,
-    "columns": 3,
-    "checks": [
-      {
-        "check": "missing_values",
-        "status": "PASS",
-        "detail": "0 columns have missing values; max rate 0.0%"
-      },
-      {
-        "check": "duplicates",
-        "status": "PASS",
-        "detail": "0 duplicate rows"
-      },
-      {
-        "check": "invalid_dates",
-        "status": "PASS",
-        "detail": "0 invalid dates in month"
-      },
-      {
-        "check": "date_range",
-        "status": "INFO",
-        "detail": "1981-01-01 00:00:00 .. 2026-07-01 00:00:00"
-      },
-      {
-        "check": "infinite_values",
-        "status": "PASS",
-        "detail": "0 infinite values"
-      },
-      {
-        "check": "outliers_3iqr",
-        "status": "INFO",
-        "detail": "kec_0:3; kec_1:3"
-      }
-    ]
-  },
-  {
-    "dataset": "dem_zonal",
-    "rows": 42,
+    "dataset": "boundaries_township",
+    "rows": 45,
     "columns": 5,
     "checks": [
       {
@@ -91,8 +27,72 @@
     ]
   },
   {
+    "dataset": "chirps_monthly_series",
+    "rows": 245,
+    "columns": 3,
+    "checks": [
+      {
+        "check": "missing_values",
+        "status": "PASS",
+        "detail": "0 columns have missing values; max rate 0.0%"
+      },
+      {
+        "check": "duplicates",
+        "status": "PASS",
+        "detail": "0 duplicate rows"
+      },
+      {
+        "check": "invalid_dates",
+        "status": "PASS",
+        "detail": "0 invalid dates in month"
+      },
+      {
+        "check": "date_range",
+        "status": "INFO",
+        "detail": "1981-01-01 00:00:00 .. 2001-05-01 00:00:00"
+      },
+      {
+        "check": "infinite_values",
+        "status": "PASS",
+        "detail": "0 infinite values"
+      },
+      {
+        "check": "outliers_3iqr",
+        "status": "INFO",
+        "detail": "none beyond 3x IQR"
+      }
+    ]
+  },
+  {
+    "dataset": "dem_zonal",
+    "rows": 45,
+    "columns": 5,
+    "checks": [
+      {
+        "check": "missing_values",
+        "status": "PASS",
+        "detail": "0 columns have missing values; max rate 0.0%"
+      },
+      {
+        "check": "duplicates",
+        "status": "PASS",
+        "detail": "0 duplicate rows"
+      },
+      {
+        "check": "infinite_values",
+        "status": "PASS",
+        "detail": "0 infinite values"
+      },
+      {
+        "check": "outliers_3iqr",
+        "status": "INFO",
+        "detail": "elev_max_m:2"
+      }
+    ]
+  },
+  {
     "dataset": "kontur_population",
-    "rows": 42,
+    "rows": 45,
     "columns": 2,
     "checks": [
       {
@@ -113,13 +113,13 @@
       {
         "check": "outliers_3iqr",
         "status": "INFO",
-        "detail": "none beyond 3x IQR"
+        "detail": "pop_est:1"
       }
     ]
   },
   {
     "dataset": "facilities",
-    "rows": 42,
+    "rows": 45,
     "columns": 3,
     "checks": [
       {
@@ -140,7 +140,7 @@
       {
         "check": "outliers_3iqr",
         "status": "INFO",
-        "detail": "health_facilities:1"
+        "detail": "health_facilities:2"
       }
     ]
   }

@@ -4,11 +4,11 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	let selected = $state(riskSummary[0]?.kec_code ?? '');
-	const selectedRow = $derived(riskSummary.find((r) => r.kec_code === selected) ?? null);
+	let selected = $state(riskSummary[0]?.tship_code ?? '');
+	const selectedRow = $derived(riskSummary.find((r) => r.tship_code === selected) ?? null);
 	const feat = $derived(
 		selectedRow
-			? (features.find((f: FeatureRow) => f.kec_code === selectedRow.kec_code) ?? null)
+			? (features.find((f: FeatureRow) => f.tship_code === selectedRow.tship_code) ?? null)
 			: null
 	);
 
@@ -71,28 +71,27 @@
 </script>
 
 <svelte:head>
-	<title>Risk explorer — FloodResilience Jakarta</title>
+	<title>Risk explorer — FloodResilience Yangon</title>
 </svelte:head>
 
 <section class="mb-6">
 	<h1 class="text-3xl font-bold tracking-tight">Risk explorer</h1>
 	<p class="mt-2 max-w-3xl text-slate-600">
-		Select a kecamatan to decompose its flood risk into hazard, exposure and vulnerability, and see
+		Select a township to decompose its flood risk into hazard, exposure and vulnerability, and see
 		which indicators drive the score.
 	</p>
 </section>
 
 <section class="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-	<label for="kecamatan-select" class="mb-1 block text-sm font-medium text-slate-600"
-		>Kecamatan</label
+	<label for="township-select" class="mb-1 block text-sm font-medium text-slate-600">Township</label
 	>
 	<select
-		id="kecamatan-select"
+		id="township-select"
 		bind:value={selected}
 		class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm sm:max-w-sm"
 	>
-		{#each riskSummary as r (r.kec_code)}
-			<option value={r.kec_code}>{r.kecamatan} — {r.kota}</option>
+		{#each riskSummary as r (r.tship_code)}
+			<option value={r.tship_code}>{r.township} — {r.district}</option>
 		{/each}
 	</select>
 </section>
@@ -101,8 +100,8 @@
 	<section class="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
 		<div class="flex flex-wrap items-start justify-between gap-4">
 			<div>
-				<h2 class="text-2xl font-bold">{selectedRow.kecamatan}</h2>
-				<p class="text-sm text-slate-500">{selectedRow.kota} · {selectedRow.kec_code}</p>
+				<h2 class="text-2xl font-bold">{selectedRow.township}</h2>
+				<p class="text-sm text-slate-500">{selectedRow.district} · {selectedRow.tship_code}</p>
 			</div>
 			<div class="text-right">
 				<p class="text-sm text-slate-500">Overall risk</p>
@@ -168,8 +167,8 @@
 	<section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
 		<h2 class="mb-2 text-lg font-semibold">Why is this area at this risk level?</h2>
 		<p class="mb-4 text-sm text-slate-600">
-			The five indicators with the highest observed values for this kecamatan, compared across all
-			42 areas:
+			The five indicators with the highest observed values for this township, compared across all 45
+			townships:
 		</p>
 		<ul class="divide-y divide-slate-100">
 			{#each contributing as c (c.name)}
@@ -188,7 +187,7 @@
 	<section class="mt-6">
 		<button
 			onclick={async () => {
-				await goto(resolve(`/locations/${encodeURIComponent(selectedRow.kecamatan)}`));
+				await goto(resolve(`/locations/${encodeURIComponent(selectedRow.township)}`));
 			}}
 			class="rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700"
 		>

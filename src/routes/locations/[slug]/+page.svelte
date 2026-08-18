@@ -6,8 +6,10 @@
 	import { resolve } from '$app/paths';
 
 	const slug = $derived(String(page.params.slug));
-	const row = $derived(riskSummary.find((r) => r.kecamatan === slug) ?? null);
-	const feat = $derived(row ? (features.find((f) => f.kec_code === row.kec_code) ?? null) : null);
+	const row = $derived(riskSummary.find((r) => r.township === slug) ?? null);
+	const feat = $derived(
+		row ? (features.find((f) => f.tship_code === row.tship_code) ?? null) : null
+	);
 
 	const comps = $derived(
 		row
@@ -25,12 +27,12 @@
 </script>
 
 <svelte:head>
-	<title>{row ? `${row.kecamatan} — FloodResilience Jakarta` : 'Not found'}</title>
+	<title>{row ? `${row.township} — FloodResilience Yangon` : 'Not found'}</title>
 </svelte:head>
 
 {#if !row}
 	<div class="rounded-xl border border-slate-200 bg-white p-8 text-center">
-		<p class="text-lg font-semibold text-slate-700">Kecamatan not found</p>
+		<p class="text-lg font-semibold text-slate-700">Township not found</p>
 		<p class="mt-1 text-sm text-slate-500">The area "{slug}" is not in the dataset.</p>
 		<button
 			onclick={back}
@@ -40,14 +42,14 @@
 	</div>
 {:else}
 	<button onclick={back} class="mb-4 text-sm font-medium text-sky-600 hover:text-sky-700"
-		>← All kecamatan</button
+		>← All townships</button
 	>
 
 	<section class="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
 		<div class="flex flex-wrap items-start justify-between gap-4">
 			<div>
-				<h1 class="text-3xl font-bold tracking-tight">{row.kecamatan}</h1>
-				<p class="text-slate-500">{row.kota} · {row.kec_code}</p>
+				<h1 class="text-3xl font-bold tracking-tight">{row.township}</h1>
+				<p class="text-slate-500">{row.district} · {row.tship_code}</p>
 			</div>
 			<div class="text-right">
 				<p class="text-sm text-slate-500">Composite risk</p>
@@ -168,7 +170,8 @@
 				</div>
 			</div>
 			<p class="mt-4 text-xs text-slate-400">
-				Children/elderly shares are kota-level (WorldPop ADM2), shared by all kecamatan in {row.kota}.
+				Children/elderly shares are district-level (WorldPop ADM2), shared by all townships in
+				{row.district}.
 			</p>
 		</section>
 	{/if}

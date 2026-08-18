@@ -1,18 +1,18 @@
-import type { FeatureRow, KotaRow, RainfallRow, RiskSummary } from './types';
+import type { DistrictRow, FeatureRow, RainfallRow, RiskSummary } from './types';
 import featuresJson from './data/features.json';
 import rainfallJson from './data/rainfall.json';
-import kotaJson from './data/kota.json';
+import districtJson from './data/district.json';
 import riskSummaryJson from './data/risk-summary.json';
 
 export const features = featuresJson as unknown as FeatureRow[];
 export const rainfall = rainfallJson as unknown as RainfallRow[];
-export const kota = kotaJson as unknown as KotaRow[];
+export const district = districtJson as unknown as DistrictRow[];
 export const riskSummary = riskSummaryJson as unknown as RiskSummary[];
 
 export const RISK_CLASS_COLORS = ['#d1fae5', '#a7f3d0', '#fde68a', '#fdba74', '#ef4444'];
 export const RISK_CLASS_LABELS = ['Low', 'Moderate-low', 'Moderate', 'High', 'Very high'];
 
-export const byCode = new Map(riskSummary.map((r) => [r.kec_code, r]));
+export const byCode = new Map(riskSummary.map((r) => [r.tship_code, r]));
 
 export function riskColor(cls: number): string {
 	return RISK_CLASS_COLORS[Math.min(Math.max(Math.round(cls) - 1, 0), 4)];
@@ -54,4 +54,9 @@ export function annualSeries(): { year: number; rain: number; flood: boolean }[]
 	return Object.entries(by)
 		.map(([year, v]) => ({ year: +year, rain: v.sum / v.n, flood: v.flood }))
 		.sort((a, b) => a.year - b.year);
+}
+
+export function rainfallRange(): { start: number; end: number; months: number } {
+	const years = rainfall.map((r) => r.year);
+	return { start: Math.min(...years), end: Math.max(...years), months: rainfall.length };
 }

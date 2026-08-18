@@ -8,16 +8,16 @@ type, the dataset and columns to bind, and the message to convey.
 
 | Item | Value |
 |---|---|
-| SAC chart | **Geo map** (background map + bubble / choropleth by `kec_code`) |
+| SAC chart | **Geo map** (background map + bubble / choropleth by `tship_code`) |
 | Dataset | `sac_risk_by_area.csv` |
 | Measures | `risk_class` (segment/color), `pop_est` (bubble size) |
-| Message | Which areas are riskiest and how many people live there |
+| Message | Which townships are riskiest and how many people live there |
 
 | Item | Value |
 |---|---|
 | SAC chart | **Column** (stacked) |
 | Dataset | `sac_infrastructure_exposure.csv` |
-| Dimensions | `kota` |
+| Dimensions | `district` |
 | Measures | `schools`, `health_facilities` |
 | Message | Critical public facilities concentrated in the same high-risk areas |
 
@@ -29,7 +29,7 @@ type, the dataset and columns to bind, and the message to convey.
 | Dataset | `sac_rainfall_timeseries.csv` |
 | Dimensions | `date` (time) |
 | Measures | `rainfall_mm` |
-| Message | Seasonal peak (Nov-Mar) drives flood season; wet years align with documented floods |
+| Message | Seasonal peak (Jun–Sep monsoon) drives the flood season; wet years align with documented floods |
 
 | Item | Value |
 |---|---|
@@ -37,15 +37,15 @@ type, the dataset and columns to bind, and the message to convey.
 | Dataset | `sac_rainfall_timeseries.csv` |
 | Dimensions | `year` |
 | Measures | `rainfall_mm` (sum), highlight `documented_flood_year` |
-| Message | Flood years 2002/2007/2013/2020/2025 were wetter than average |
+| Message | Documented Yangon flood years were wetter than average |
 
 | Item | Value |
 |---|---|
 | SAC chart | **Bubble / Line** |
 | Dataset | `sac_flood_events.csv` |
 | Dimensions | `year` |
-| Measures | `n_flood_events_indonesia` |
-| Message | Regional flood frequency trend (DFO) |
+| Measures | `n_flood_events_myanmar` |
+| Message | National flood frequency trend (DFO) |
 
 ## Story 3: Risk drivers (decomposition)
 
@@ -53,9 +53,9 @@ type, the dataset and columns to bind, and the message to convey.
 |---|---|
 | SAC chart | **Radar** or **100% stacked column** |
 | Dataset | `sac_risk_by_area.csv` |
-| Dimensions | `kecamatan` (top 10 by `risk_100`) |
+| Dimensions | `township` (top 10 by `risk_100`) |
 | Measures | `hazard`, `exposure`, `vulnerability` |
-| Message | Highest-risk kecamatan combine high hazard AND high exposure |
+| Message | Highest-risk townships combine high hazard AND high exposure |
 
 | Item | Value |
 |---|---|
@@ -63,8 +63,8 @@ type, the dataset and columns to bind, and the message to convey.
 | Dataset | `sac_risk_factors.csv` |
 | Axis X | `elev_mean_m` |
 | Axis Y | `risk_100` |
-| Color | `kota` |
-| Message | Low elevation correlates with higher risk (north Jakarta) |
+| Color | `district` |
+| Message | Low elevation correlates with higher risk (low-lying delta fringe) |
 
 ## Story 4: Actionable priorities
 
@@ -72,7 +72,7 @@ type, the dataset and columns to bind, and the message to convey.
 |---|---|
 | SAC chart | **Table** + **Bar** |
 | Dataset | `sac_risk_by_area.csv` |
-| Dimensions | `kecamatan` |
+| Dimensions | `township` |
 | Measures | `risk_100`, `pop_est`, `schools`, `health_facilities` |
 | Message | Priority list for early-warning and infrastructure hardening |
 

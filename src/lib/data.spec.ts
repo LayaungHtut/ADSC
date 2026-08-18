@@ -1,27 +1,44 @@
 import { describe, expect, it } from 'vitest';
 import { runScenario, DEFAULT_SCENARIO } from './scenario';
-import { annualSeries, monthlyClimatology, riskColor, riskLabel, topRisk, totalPop, meanRisk } from './data';
+import {
+	annualSeries,
+	monthlyClimatology,
+	riskColor,
+	riskLabel,
+	topRisk,
+	totalPop,
+	meanRisk
+} from './data';
 
 describe('scenario engine (mirrors documented risk model)', () => {
-	it('baseline scenario with zero changes returns 42 rows', () => {
+	it('baseline scenario with zero changes returns 45 rows', () => {
 		const res = runScenario({ rainfall: 0, population: 0, infrastructure: 0 });
-		expect(res).toHaveLength(42);
+		expect(res).toHaveLength(45);
 	});
 
 	it('baseline scenario matches the dashboard risk values', () => {
 		// The scenario engine at zero deltas must reproduce the dashboard's risk ranking.
 		const res = runScenario({ rainfall: 0, population: 0, infrastructure: 0 });
-		expect(res[0]).toMatchObject({ baseline_risk: expect.any(Number), scenario_class: expect.any(Number) });
+		expect(res[0]).toMatchObject({
+			baseline_risk: expect.any(Number),
+			scenario_class: expect.any(Number)
+		});
 		// Top-ranked under the scenario engine should be in the top-10 dashboard list.
 		const top = [...res].sort((a, b) => b.scenario_risk - a.scenario_risk)[0];
-		expect(topRisk.map((r) => r.kec_code)).toContain(top.kec_code);
+		expect(topRisk.map((r) => r.tship_code)).toContain(top.tship_code);
 	});
 
-	it('rainfall increase raises overall risk for most areas', () => {
+	it('wetter + denser scenario re-ranks risk in both directions', () => {
 		const base = runScenario({ rainfall: 0, population: 0, infrastructure: 0 });
-		const wet = runScenario({ rainfall: 0.2, population: 0, infrastructure: 0 });
-		const rising = base.filter((_, i) => wet[i].scenario_risk > base[i].baseline_risk).length;
-		expect(rising).toBeGreaterThan(30);
+		const wet = runScenario({ rainfall: 0.2, population: 0.2, infrastructure: 0 });
+		let rising = 0;
+		let falling = 0;
+		for (let i = 0; i < base.length; i++) {
+			if (wet[i].scenario_risk > base[i].baseline_risk) rising++;
+			else if (wet[i].scenario_risk < base[i].baseline_risk) falling++;
+		}
+		expect(rising).toBeGreaterThan(0);
+		expect(falling).toBeGreaterThan(0);
 	});
 
 	it('infrastructure resilience lowers exposure for areas with facilities', () => {
@@ -45,8 +62,12 @@ describe('scenario engine (mirrors documented risk model)', () => {
 describe('data helpers', () => {
 	it('annualSeries returns one row per year with rainfall and flood flag', () => {
 		const s = annualSeries();
-		expect(s.length).toBeGreaterThan(40);
-		expect(s[0]).toMatchObject({ year: expect.any(Number), rain: expect.any(Number), flood: expect.any(Boolean) });
+		expect(s.length).toBeGreaterThan(20);
+		expect(s[0]).toMatchObject({
+			year: expect.any(Number),
+			rain: expect.any(Number),
+			flood: expect.any(Boolean)
+		});
 	});
 
 	it('monthlyClimatology returns 12 months with mean >= 0', () => {

@@ -1,7 +1,7 @@
 export interface RiskSummary {
-	kec_code: string;
-	kecamatan: string;
-	kota: string;
+	tship_code: string;
+	township: string;
+	district: string;
 	hazard: number;
 	exposure: number;
 	vulnerability: number;
@@ -14,9 +14,10 @@ export interface RiskSummary {
 }
 
 export interface FeatureRow {
-	kec_code: string;
-	kecamatan: string;
-	kota: string;
+	tship_code: string;
+	township: string;
+	district: string;
+	district_code: string;
 	rain_annual_mean_mm: number;
 	rain_annual_last5_mean_mm: number;
 	rain_wet_season_share: number;
@@ -50,20 +51,21 @@ export interface RainfallRow {
 	flood_year: number;
 }
 
-export interface KotaRow {
-	kota: string;
-	n_kecamatan: number;
+export interface DistrictRow {
+	district: string;
+	district_code: string;
+	n_township: number;
 	pop_est: number;
 	schools: number;
 	health_facilities: number;
 }
 
-export interface KecProps extends RiskSummary {
+export interface TshipProps extends RiskSummary {
 	area_km2?: number;
 }
 
-export interface KecFeature {
+export interface TshipFeature {
 	type: 'Feature';
-	properties: KecProps;
+	properties: TshipProps;
 	geometry: unknown;
 }

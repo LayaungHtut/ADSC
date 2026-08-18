@@ -17,9 +17,9 @@ from floodresilience.features.risk_index import (
 
 MINI = pd.DataFrame(
     {
-        "kec_code": ["A", "B", "C"],
-        "kecamatan": ["Alpha", "Beta", "Gamma"],
-        "kota": ["X", "X", "Y"],
+        "tship_code": ["A", "B", "C"],
+        "township": ["Alpha", "Beta", "Gamma"],
+        "district": ["X", "X", "Y"],
         "elev_mean_m": [2.0, 10.0, 50.0],
         "rain_annual_mean_mm": [3000.0, 2400.0, 1800.0],
         "rain_extreme_months": [12, 6, 0],

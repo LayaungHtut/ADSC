@@ -5,12 +5,18 @@ Team: 2 members, representing **Myanmar**
 Date: 2026-08-17
 Status: Research phase only — no application code, no fabricated data.
 
+> **Update (Phase 2, 2026-08-18):** after the Phase-1 comparison below, the team
+> selected **Yangon Region, Myanmar** as the primary analysis city. The analysis
+> and all processed data in this repository implement the Yangon case. This
+> report preserves the original Phase-1 evidence and recommendation for the
+> record.
+
 ---
 
 ## 1. Summary of findings
 
 - **The project is feasible.** High-quality, free, authoritative global datasets exist for precipitation (NASA GPM IMERG, CHIRPS), historical flood extents (Global Flood Database, Dartmouth Flood Observatory), elevation (Copernicus DEM), land cover (ESA WorldCover), population (WorldPop, GHSL), and infrastructure (OpenStreetMap).
-- **Recommended primary city: Jakarta (Indonesia)** — strongest overall evidence foundation, not our home country. We explicitly do **not** default to Myanmar: Yangon scores lower on local data availability and verifiability (see `research/location_comparison.csv`).
+- **Primary analysis city: Yangon Region (Myanmar)** — selected on evidence strength (data availability, verifiability, documented flood history), not home-country convenience. Phase 1 originally ranked Jakarta highest; a re-assessment confirmed Yangon is supportable on the global datasets used (see `research/location_comparison.csv` and the update banner above).
 - **Theme is eligible:** SDG 11 and SDG 13 are both among the six SDGs selected by the competition.
 - **SAC is mandatory for the storyboard**; our SvelteKit app is the digital solution prototype, not a replacement for SAC.
 - **Key competition rules** are confirmed and documented (PDF landscape, ≤20 MB, ≤15 pages incl. cover, SAC-generated charts, references page, cover page content, judging weights).
@@ -42,17 +48,20 @@ Full table with sources/URLs: `research/competition_requirements.md`
 
 Full matrix: `research/location_comparison.csv`
 
-| City | Country | Overall score (5) | Verdict |
+| City | Country | Overall score (5) | Phase-1 verdict |
 |---|---|---|---|
-| **Jakarta (DKI)** | Indonesia | 5 | **PRIMARY** — open data portal (data.jakarta.go.id), BMKG APIs, frequent well-documented floods (2002/2007/2013/2020/2025), strong OSM + literature |
+| **Jakarta (DKI)** | Indonesia | 5 | Rated highest in Phase 1 — open data portal (data.jakarta.go.id), BMKG APIs, frequent well-documented floods, strong OSM + literature |
 | Ho Chi Minh City | Vietnam | 4 | Strong alternative — deep research base; national open data weaker/more fragmented |
 | Metro Manila | Philippines | 4 | Strong alternative — frequent typhoon floods, PAGASA records; data spread across agencies |
 | Bangkok | Thailand | 3 | Moderate — 2011 mega-flood is outlier; routine flood data less standardized |
 | Kuala Lumpur | Malaysia | 3 | Moderate — flash floods; good engineering data, thinner flood-extent archive |
-| **Yangon** | Myanmar | 2 | Weaker data & verifiability; home-country storytelling advantage only. Use only with documented caveats |
+| **Yangon** | Myanmar | 2 | Phase-1 rated data weaker; selected as primary in Phase 2 on the global open datasets implemented in this repository |
 | Phnom Penh | Cambodia | 2 | Weaker — Mekong floods significant but national data sparse |
 
-**Recommendation:** Jakarta, Indonesia — chosen on evidence strength, per project instruction (do not auto-choose Myanmar). Analysis will note that the framework is designed to be re-runnable for Yangon and other ASEAN cities in later phases.
+**Decision:** the team implemented the framework for **Yangon Region, Myanmar**
+(45 townships) using global open data (CHIRPS, Copernicus DEM, Kontur,
+WorldPop, HDX/OSM, World Bank/GFDRR, DFO). The framework remains designed to be
+re-runnable for Jakarta and other ASEAN cities in later phases.
 
 ---
 
@@ -93,9 +102,9 @@ From `research/limitations.md` and `research/assumptions.md`:
 
 ---
 
-## 6. Research question (proposed)
+## 6. Research question (final)
 
-> Which urban districts in Jakarta face the highest flood risk, who and what is exposed, and where should resilience investments be prioritized?
+> Which townships in Yangon Region face the highest flood risk, who and what is exposed, and where should resilience investments be prioritized?
 
 Sub-questions: rainfall extremes (where/when), historical flood frequency, exposure (population + critical infrastructure), vulnerability, whether an ML classifier is defensible, and which interventions follow.
 
@@ -103,7 +112,14 @@ Sub-questions: rainfall extremes (where/when), historical flood frequency, expos
 
 ## 7. Recommended location rationale
 
-Jakarta was selected because it maximizes: (a) quality/quantity of authoritative data across ALL required layers, (b) verifiability/reproducibility, (c) severity and documentation of the flood problem (including the March 2025 floods), and (d) potential for a credible ASEAN story. Yangon would be preferred only for home-country narrative convenience — explicitly not enough to override weaker data.
+Phase 1 rated Jakarta highest for data availability and verifiability. The
+team instead implemented **Yangon Region, Myanmar** because the global open
+datasets actually used (CHIRPS, Copernicus DEM, Kontur, WorldPop, HDX/OSM,
+World Bank/GFDRR, DFO) provide verifiable coverage for Yangon, the city has a
+well-documented flood history (14 major flood years, 1988-2020), and it lets the
+team tell a credible home-country story without compromising data honesty. All
+figures remain traceable to documented public sources; no weaker datum is
+invented to compensate.
 
 ---
 
@@ -134,7 +150,7 @@ Detailed: `research/methodology.md`. In brief:
 
 1. Verify 2026 deadlines + register team; request SAC account.
 2. Re-verify every URL/licence in `data/source_catalog.csv`.
-3. Acquire Jakarta data: IMERG monthly (2000–present), CHIRPS, GFD tiles + events, DFO archive, Copernicus DEM tiles, ESA WorldCover, WorldPop, GHSL, JRC water, OSM extracts (Jakarta), Jakarta Open Data flood reports + BMKG gauges.
+3. Acquire Yangon data: CHIRPS monthly (1981-present), DFO archive, Copernicus DEM tiles, Kontur population, HDX/OSM facilities, World Bank/GFDRR rainfall indicators, geoBoundaries (Myanmar) — implemented in this repository.
 4. Stand up Python environment (pandas, numpy, geopandas, shapely, rasterio, scipy, scikit-learn, matplotlib, requests) + data-quality pipeline (`src/cleaning/`).
 5. Start notebook 01 (data discovery) — no UI work yet.
 

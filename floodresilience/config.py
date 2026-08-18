@@ -45,16 +45,16 @@ for _d in (
 # ---------------------------------------------------------------------------
 # Geographic frame
 # ---------------------------------------------------------------------------
-# Analysis location: DKI Jakarta, Indonesia (chosen in Phase 1 on data strength).
-# WGS84 lon/lat bounds. Padded beyond the province so raster zonal statistics
-# and neighbourhood analysis still capture boundary context.
-JAKARTA_BBOX = (106.55, -6.50, 107.10, -5.95)  # (west, south, east, north)
-JAKARTA_CENTER = (106.8456, -6.2088)
+# Analysis location: Yangon Region, Myanmar. WGS84 lon/lat bounds padded
+# beyond the region so raster zonal statistics and neighbourhood analysis
+# still capture boundary context.
+YANGON_BBOX = (93.3, 14.0, 96.9, 17.8)  # (west, south, east, north)
+YANGON_CENTER = (96.1561, 16.8713)
 
 # Primary source CRS for the raw geospatial files.
 CRS_WGS84 = "EPSG:4326"
-# Local projected CRS for distances/areas (Jakarta lies in UTM zone 48S).
-CRS_UTM = "EPSG:32748"
+# Local projected CRS for distances/areas (Yangon lies in UTM zone 47N).
+CRS_UTM = "EPSG:32647"
 CRS_WEB = "EPSG:3857"  # for interactive map tiles only
 
 # ---------------------------------------------------------------------------
@@ -62,24 +62,39 @@ CRS_WEB = "EPSG:3857"  # for interactive map tiles only
 # ---------------------------------------------------------------------------
 CHIRPS_COG_BASE = "https://data.chc.ucsb.edu/products/CHIRPS-2.0/global_monthly/cogs"
 CHIRPS_START_YEAR = 1981
-CHIRPS_END_YEAR = 2024  # inclusive; product continues
+CHIRPS_END_YEAR = 2026  # inclusive; product is continuous to the present
 
 # Earthdata / GPM (requires login — not used by automated pipeline yet)
 GPM_DATASET_URL = "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGM_07/summary"
 
-# Copernicus DEM 30 m COG tiles covering Jakarta (S06E106, S06E107 and the
-# mainland band S07E106, S07E107 — Jakarta city centre lies south of -6.0).
+# Copernicus DEM 30 m COG tiles covering the Yangon Region bbox (lat 14-18 N,
+# lon 93-97 E). Only the tiles actually downloaded under data/raw/dem/ are used
+# by the pipeline; the full 1x1 degree set is listed here for documentation.
 DEM_TILES = {
-    "S06E106": "https://s3.eu-central-1.amazonaws.com/copernicus-dem-30m/Copernicus_DSM_COG_10_S06_00_E106_00_DEM/Copernicus_DSM_COG_10_S06_00_E106_00_DEM.tif",
-    "S06E107": "https://s3.eu-central-1.amazonaws.com/copernicus-dem-30m/Copernicus_DSM_COG_10_S06_00_E107_00_DEM/Copernicus_DSM_COG_10_S06_00_E107_00_DEM.tif",
-    "S07E106": "https://s3.eu-central-1.amazonaws.com/copernicus-dem-30m/Copernicus_DSM_COG_10_S07_00_E106_00_DEM/Copernicus_DSM_COG_10_S07_00_E106_00_DEM.tif",
-    "S07E107": "https://s3.eu-central-1.amazonaws.com/copernicus-dem-30m/Copernicus_DSM_COG_10_S07_00_E107_00_DEM/Copernicus_DSM_COG_10_S07_00_E107_00_DEM.tif",
+    f"lat{l:02d}-{l+1:02d}Nlon{e:03d}-{e+1:03d}E": (
+        f"https://s3.eu-central-1.amazonaws.com/copernicus-dem-30m/"
+        f"Copernicus_DSM_COG_10_N{l:02d}_00_E{e:03d}_00_DEM/Copernicus_DSM_COG_10_N{l:02d}_00_E{e:03d}_00_DEM.tif"
+    )
+    for l in range(14, 18)
+    for e in range(93, 97)
 }
 
-# HDX / geoBoundaries
-GEOBOUNDARIES_ADM1 = "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/IDN/ADM1/geoBoundaries-IDN-ADM1_simplified.geojson"
-GEOBOUNDARIES_ADM2 = "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/IDN/ADM2/geoBoundaries-IDN-ADM2_simplified.geojson"
+# HDX / geoBoundaries (Myanmar)
+GEOBOUNDARIES_ADM1 = "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/MMR/ADM1/geoBoundaries-MMR-ADM1_simplified.geojson"
+# Myanmar townships are ADM3 (Yangon Region has 45 townships).
+GEOBOUNDARIES_ADM3 = "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/MMR/ADM3/geoBoundaries-MMR-ADM3_simplified.geojson"
 HDX_API = "https://data.humdata.org/api/3/action/package_show?id="
+
+# Documented major Yangon flood years (from published records, within the
+# CHIRPS 1981+ record). Sources:
+#   - PIAHS 386 (2024) RRI flood study: severe Yangon floods 1988, 1991, 1997,
+#     2002, 2004, 2007, 2014.
+#   - Sritarapipat (2017) urban-growth study: Yangon floods 2008, 2010, 2013,
+#     2014, 2015.
+#   - OCHA 2017 monsoon update (Yangon among flooded regions).
+#   - UNOSAT Sentinel-1 mapping, 2 Aug 2020 (Yangon Region surface water).
+# These are CONTEXT flags only — never used as per-township labels.
+DOCUMENTED_YANGON_FLOOD_YEARS = [1988, 1991, 1997, 2002, 2004, 2007, 2008, 2010, 2013, 2014, 2015, 2017, 2019, 2020]
 
 # ---------------------------------------------------------------------------
 # Misc

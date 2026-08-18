@@ -14,19 +14,37 @@ import numpy as np
 import pandas as pd
 import rasterio
 
-from floodresilience.config import DATA_PROCESSED, DATA_RAW, DATA_INTERMEDIATE, OUTPUT_REPORTS, OUTPUT_TABLES
+from floodresilience.config import (
+    DATA_PROCESSED,
+    DATA_RAW,
+    DATA_INTERMEDIATE,
+    OUTPUT_REPORTS,
+    OUTPUT_TABLES,
+    DOCUMENTED_YANGON_FLOOD_YEARS,
+)
 
-FEATURES = DATA_PROCESSED / "jakarta_kecamatan_features.csv"
+FEATURES = DATA_PROCESSED / "yangon_township_features.csv"
 RISK = OUTPUT_TABLES / "risk_scores.csv"
-CHIRPS_DIR = DATA_INTERMEDIATE / "rainfall" / "chirps"
+CHIRPS_DIR = DATA_INTERMEDIATE / "rainfall" / "chirps_yangon"
+DFO = DATA_RAW / "dfo" / "Global_Flood_Records.csv"
 
-DOCUMENTED_JAKARTA_FLOOD_YEARS = [2002, 2007, 2013, 2020, 2025]
+DOCUMENTED_FLOOD_YEARS = DOCUMENTED_YANGON_FLOOD_YEARS
 
 
 def _fmt(x: float, nd: int = 1) -> str:
     if pd.isna(x):
         return "n/a"
     return f"{x:,.{nd}f}"
+
+
+def _series_span() -> str:
+    """'YYYY-MM .. YYYY-MM' range of the actual CHIRPS tiles present."""
+    files = sorted(glob.glob(str(CHIRPS_DIR / "chirps_*.tif")))
+    if not files:
+        return "n/a"
+    first = Path(files[0]).stem.split("_")[1]
+    last = Path(files[-1]).stem.split("_")[1]
+    return f"{first[:4]}-{first[4:6]} .. {last[:4]}-{last[4:6]}"
 
 
 def build_insights() -> list[dict]:
@@ -37,36 +55,36 @@ def build_insights() -> list[dict]:
     # Highest-risk area
     top = risk.sort_values("risk_100", ascending=False).iloc[0]
     out.append({
-        "insight": "Highest-risk kecamatan",
+        "insight": "Highest-risk township",
         "metric": "risk_100",
         "value": _fmt(top["risk_100"]),
-        "comparison": f"vs Jakarta mean {_fmt(risk['risk_100'].mean())}",
+        "comparison": f"vs Yangon mean {_fmt(risk['risk_100'].mean())}",
         "source": "outputs/tables/risk_scores.csv",
-        "interpretation": f"{top['kecamatan']} ({top['kota']}) ranks highest under the default hazard-exposure-vulnerability weighting; it combines high population, dense critical facilities and moderate rainfall exposure.",
+        "interpretation": f"{top['township']} ({top['district']}) ranks highest under the default hazard-exposure-vulnerability weighting; it combines high population, dense critical facilities and strong rainfall exposure.",
         "limitation": "Ranking depends on documented weights; see risk_sensitivity.csv.",
     })
 
     # Largest exposed population
     pop = df.sort_values("pop_est", ascending=False).iloc[0]
     out.append({
-        "insight": "Kecamatan with largest population",
+        "insight": "Township with largest population",
         "metric": "pop_est (persons)",
         "value": _fmt(pop["pop_est"], 0),
-        "comparison": f"of Jakarta total {_fmt(df['pop_est'].sum(), 0)}",
+        "comparison": f"of Yangon total {_fmt(df['pop_est'].sum(), 0)}",
         "source": "sac_population_exposure.csv (Kontur H3, area-weighted)",
-        "interpretation": f"{pop['kecamatan']} hosts the largest resident population among the 42 urban kecamatan.",
+        "interpretation": f"{pop['township']} hosts the largest resident population among the 45 Yangon townships.",
         "limitation": "Kontur population is a modeled estimate (Nov 2023), not census.",
     })
 
     # Population in highest risk class
-    high = risk[risk["risk_class"] == 5].merge(df[["kec_code", "pop_est"]], on="kec_code")
+    high = risk[risk["risk_class"] == 5].merge(df[["tship_code", "pop_est"]], on="tship_code")
     out.append({
         "insight": "Population in highest-risk class",
         "metric": "pop_est (persons)",
         "value": _fmt(high["pop_est"].sum(), 0),
-        "comparison": f"{_fmt(high['pop_est'].sum() / df['pop_est'].sum() * 100, 1)}% of Jakarta population",
+        "comparison": f"{_fmt(high['pop_est'].sum() / df['pop_est'].sum() * 100, 1)}% of Yangon population",
         "source": "risk_scores.csv + sac_population_exposure.csv",
-        "interpretation": "A substantial share of Jakarta's population lives in the top risk quintile of kecamatan.",
+        "interpretation": "A substantial share of Yangon's population lives in the top risk quintile of townships.",
         "limitation": "Class boundaries are quintiles of the risk score; they are relative, not absolute safety thresholds.",
     })
 
@@ -74,12 +92,12 @@ def build_insights() -> list[dict]:
     low = df.sort_values("elev_min_m").iloc[0]
     high_e = df.sort_values("elev_mean_m", ascending=False).iloc[0]
     out.append({
-        "insight": "Elevation gradient (flood-prone lowlands in the north)",
+        "insight": "Elevation gradient (flood-prone lowlands near the rivers)",
         "metric": "elev_mean_m",
         "value": f"min {_fmt(df['elev_min_m'].min())} m .. max {_fmt(df['elev_mean_m'].max())} m",
-        "comparison": f"lowest point {low['kecamatan']} ({_fmt(low['elev_min_m'])} m), highest mean {high_e['kecamatan']} ({_fmt(high_e['elev_mean_m'])} m)",
+        "comparison": f"lowest point {low['township']} ({_fmt(low['elev_min_m'])} m), highest mean {high_e['township']} ({_fmt(high_e['elev_mean_m'])} m)",
         "source": "Copernicus DEM 30m, zonal stats",
-        "interpretation": "Northern and western coastal kecamatan sit at or below sea level, consistent with documented coastal/pluvial flood exposure.",
+        "interpretation": "Townships along the Yangon, Bago and Hlaing rivers and the delta fringe sit at low elevation, consistent with documented fluvial/pluvial flood exposure.",
         "limitation": "DEM is a surface model (DSM) and does not capture flood depth or drainage.",
     })
 
@@ -99,14 +117,15 @@ def build_insights() -> list[dict]:
         "metric": "mean monthly rainfall (mm)",
         "value": f"peak month {int(wet[0])} ({_fmt(cdf.loc[wet[0]])})",
         "comparison": f"wettest months {wet}, driest {dry}",
-        "source": "CHIRPS v2.0 monthly, 1981-2026",
-        "interpretation": "Rainfall is strongly seasonal; the wet season aligns with documented peak flooding periods (Nov-Mar).",
+        "source": f"CHIRPS v2.0 monthly, {_series_span()}",
+        "interpretation": "Rainfall is strongly seasonal under the southwest monsoon; the wet season aligns with the documented peak flooding period (May-Oct).",
         "limitation": "Monthly means smooth extreme sub-monthly events that trigger flash floods.",
     })
 
     # Trend
     annual = load_annual()
     z = np.polyfit(annual["year"], annual["rain"], 1)
+    span_years = int(annual["year"].max() - annual["year"].min())
     out.append({
         "insight": "Long-term rainfall trend",
         "metric": "mm/year (OLS)",
@@ -114,20 +133,20 @@ def build_insights() -> list[dict]:
         "comparison": f"over {annual['year'].min()}-{annual['year'].max()}",
         "source": "CHIRPS v2.0 monthly aggregated annually (bbox mean)",
         "interpretation": "OLS slope is small; no strong linear trend is assumed. Interannual variability dominates.",
-        "limitation": "OLS trend over 45 years is sensitive to endpoints; no significance test applied here.",
+        "limitation": f"OLS trend over {span_years} years is sensitive to endpoints; no significance test applied here.",
     })
 
     # Flood years validation
-    flood_yr_means = annual[annual["year"].isin(DOCUMENTED_JAKARTA_FLOOD_YEARS)]["rain"].mean()
+    flood_yr_means = annual[annual["year"].isin(DOCUMENTED_FLOOD_YEARS)]["rain"].mean()
     all_mean = annual["rain"].mean()
     out.append({
         "insight": "Documented flood years align with wet years",
         "metric": "annual rainfall (mm)",
         "value": _fmt(flood_yr_means),
         "comparison": f"mean of documented flood years {_fmt(flood_yr_means,0)} vs overall mean {_fmt(all_mean,0)}",
-        "source": "CHIRPS + documented Jakarta flood years (2002/2007/2013/2020/2025)",
-        "interpretation": "On average, years with documented major Jakarta floods were wetter than the 1981-2025 mean, supporting rainfall as a hazard driver.",
-        "limitation": "Correlation between rainfall and flood occurrence is not causation; drainage, land subsidence and tides also matter.",
+        "source": "CHIRPS + documented Yangon flood years (PIAHS 2024; Sritarapipat 2017; OCHA 2017; UNOSAT 2020)",
+        "interpretation": "On average, years with documented major Yangon floods were wetter than the long-run mean, supporting rainfall as a hazard driver.",
+        "limitation": "Correlation between rainfall and flood occurrence is not causation; river levels, tides, drainage and land use also matter.",
     })
 
     # Infrastructure exposure
@@ -135,9 +154,9 @@ def build_insights() -> list[dict]:
         "insight": "Critical infrastructure concentration",
         "metric": "facilities",
         "value": f"{df['schools'].sum():,.0f} schools, {df['health_facilities'].sum():,.0f} health facilities",
-        "comparison": "within Jakarta's 42 urban kecamatan",
-        "source": "HDX school/health facility points (OSM-derived)",
-        "interpretation": "Schools and health facilities are spread across all kecamatan, so any flood event threatens public services.",
+        "comparison": "within Yangon's 45 townships",
+        "source": "HDX / OSM education & health facility polygons (Myanmar)",
+        "interpretation": "Schools and health facilities are spread across all townships, so any flood event threatens public services.",
         "limitation": "OSM-based facility lists may undercount private or informal facilities.",
     })
 
@@ -147,10 +166,25 @@ def build_insights() -> list[dict]:
         "insight": "Recent flood-relevant rainfall intensity",
         "metric": "rfh index (mean, 2022-2026)",
         "value": _fmt(wb_top["rfh_mean"]),
-        "comparison": f"highest in {wb_top['kota']}",
+        "comparison": f"highest in {wb_top['district']}",
         "source": "World Bank / GFDRR subnational rainfall indicators (ADM2)",
-        "interpretation": "Southern Jakarta has seen higher recent rainfall-flood index values on the 10-day scale.",
-        "limitation": "Indices are at kota level (not kecamatan) and cover only 2022+.",
+        "interpretation": "Parts of Yangon show higher recent rainfall-flood index values on the 10-day scale.",
+        "limitation": "Indices are at district level (not township) and cover only 2022+.",
+    })
+
+    # DFO Myanmar context
+    dfo = pd.read_csv(DFO)
+    dfo_my = dfo[dfo["Country"].astype(str).str.contains("Myanmar", case=False, na=False)]
+    dfo_my["Start Date"] = pd.to_datetime(dfo_my["Start Date"], errors="coerce")
+    dfo_my = dfo_my.dropna(subset=["Start Date"])
+    out.append({
+        "insight": "National flood-events context (DFO)",
+        "metric": "events (1985-2023)",
+        "value": str(len(dfo_my)),
+        "comparison": "DFO-documented flood events in Myanmar",
+        "source": "Dartmouth Flood Observatory Global Flood Records",
+        "interpretation": "Myanmar is one of ASEAN's most flood-affected countries; the Yangon analysis sits within this national hazard context.",
+        "limitation": "DFO records are event-based and may omit smaller or under-reported floods.",
     })
 
     return out

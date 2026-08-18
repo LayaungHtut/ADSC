@@ -20,9 +20,9 @@ def test_sac_risk_by_area_has_documented_columns() -> None:
     if not path.exists():
         pytest.skip("sac exports not generated")
     df = pd.read_csv(path)
-    expected = {"kec_code", "kecamatan", "kota", "hazard", "exposure", "vulnerability", "risk", "risk_100", "risk_class"}
+    expected = {"tship_code", "township", "district", "hazard", "exposure", "vulnerability", "risk", "risk_100", "risk_class"}
     assert expected.issubset(df.columns)
-    assert len(df) == 42
+    assert len(df) == 45
 
 
 @pytest.mark.parametrize(

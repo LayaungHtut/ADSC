@@ -1,4 +1,4 @@
-"""Flood risk index for DKI Jakarta kecamatan.
+"""Flood risk index for Yangon Region townships.
 
 Risk = f(Hazard, Exposure, Vulnerability).
 
@@ -6,7 +6,7 @@ All sub-indicators are min-max normalised to [0, 1] (higher = worse).
 Default weights are documented and a sensitivity analysis runs alternative
 weightings and normalisations so rankings can be checked for stability.
 
-Every input is traceable to `data/processed/jakarta_kecamatan_features.csv`.
+Every input is traceable to `data/processed/yangon_township_features.csv`.
 No thresholds are arbitrarily assigned; classes are quantile-based.
 """
 
@@ -17,7 +17,7 @@ import pandas as pd
 
 from floodresilience.config import DATA_PROCESSED, OUTPUT_TABLES
 
-FEATURES = DATA_PROCESSED / "jakarta_kecamatan_features.csv"
+FEATURES = DATA_PROCESSED / "yangon_township_features.csv"
 
 # Default component weights (sum to 1). Justification: hazard is the driver,
 # exposure determines what is harmed, vulnerability shapes impact.
@@ -67,7 +67,7 @@ def vulnerability_score(df: pd.DataFrame, norm=minmax) -> pd.Series:
 
 
 def risk_scores(df: pd.DataFrame, weights: dict[str, float], norm=minmax) -> pd.DataFrame:
-    out = df[["kec_code", "kecamatan", "kota"]].copy()
+    out = df[["tship_code", "township", "district"]].copy()
     out["hazard"] = hazard_score(df, norm)
     out["exposure"] = exposure_score(df, norm)
     out["vulnerability"] = vulnerability_score(df, norm)
@@ -86,8 +86,8 @@ def risk_quantiles(score: pd.Series) -> pd.Series:
 
 
 def sensitivity_analysis(df: pd.DataFrame) -> pd.DataFrame:
-    """Rank each kecamatan under every weighting scheme; report rank spread."""
-    ranks = pd.DataFrame({"kecamatan": df["kecamatan"].values})
+    """Rank each township under every weighting scheme; report rank spread."""
+    ranks = pd.DataFrame({"township": df["township"].values})
     for i, w in enumerate([DEFAULT_WEIGHTS, *SENSITIVITY_WEIGHTS]):
         r = risk_scores(df, w)
         ranks[f"rank_{i}"] = r["risk"].rank(ascending=False, method="min").astype(int)
@@ -103,7 +103,7 @@ def build_risk_dataset(weights: dict[str, float] | None = None, norm=minmax) -> 
     w = weights or DEFAULT_WEIGHTS
     out = risk_scores(df, w, norm)
     out["risk_class"] = risk_quantiles(out["risk_100"]).astype(int)
-    out = out.merge(df[["kec_code", "pop_est", "schools", "health_facilities"]], on="kec_code", how="left")
+    out = out.merge(df[["tship_code", "pop_est", "schools", "health_facilities"]], on="tship_code", how="left")
     return out
 
 
@@ -121,7 +121,7 @@ def main() -> None:
     print("=== TOP 10 RISK (default weights) ===")
     print(risk.sort_values("risk_100", ascending=False).head(10).to_string(index=False))
     print(f"\nmean rank spread across {1+len(SENSITIVITY_WEIGHTS)} weightings: {spread:.2f}")
-    print("\n=== sensitivity (rank spread per kecamatan) ===")
+    print("\n=== sensitivity (rank spread per township) ===")
     print(sens.sort_values("rank_spread", ascending=False).head(10).to_string(index=False))
 
 

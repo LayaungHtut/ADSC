@@ -14,14 +14,14 @@
 </script>
 
 <svelte:head>
-	<title>Risk map — FloodResilience Jakarta</title>
+	<title>Risk map — FloodResilience Yangon</title>
 </svelte:head>
 
 <section class="mb-6">
 	<h1 class="text-3xl font-bold tracking-tight">Interactive risk map</h1>
 	<p class="mt-2 max-w-3xl text-slate-600">
-		Choropleth of the composite flood-risk index across Jakarta's 42 urban kecamatan. Click any area
-		to inspect its hazard, exposure and vulnerability components.
+		Choropleth of the composite flood-risk index across Yangon Region's 45 urban townships. Click
+		any area to inspect its hazard, exposure and vulnerability components.
 	</p>
 </section>
 
@@ -32,8 +32,8 @@
 	<aside class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 		{#if detail}
 			<div>
-				<h2 class="text-xl font-semibold">{detail.kecamatan}</h2>
-				<p class="text-sm text-slate-500">{detail.kota}</p>
+				<h2 class="text-xl font-semibold">{detail.township}</h2>
+				<p class="text-sm text-slate-500">{detail.district}</p>
 				<dl class="mt-4 space-y-3 text-sm">
 					<div>
 						<dt class="text-slate-500">Composite risk</dt>
@@ -71,7 +71,7 @@
 				</dl>
 				<button
 					onclick={async () => {
-						await goto(resolve(`/locations/${encodeURIComponent(detail.kecamatan)}`));
+						await goto(resolve(`/locations/${encodeURIComponent(detail.township)}`));
 					}}
 					class="mt-5 w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700"
 				>
@@ -79,7 +79,7 @@
 				</button>
 			</div>
 		{:else}
-			<p class="text-sm text-slate-500">Select a kecamatan on the map to see its risk profile.</p>
+			<p class="text-sm text-slate-500">Select a township on the map to see its risk profile.</p>
 		{/if}
 	</aside>
 </section>

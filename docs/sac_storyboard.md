@@ -27,10 +27,10 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 
 - **Objective**: identify the project at a glance.
 - **Headline**: FloodResilience ASEAN — Data-Driven Urban Flood Risk
-  Intelligence for Jakarta.
+  Intelligence for Yangon.
 - **Content (official cover requirements)**: Storyboard Title; Team Name;
-  Institution; Country represented; SDG(s) to achieve (SDG 11, SDG 13); brief
-  description.
+  Institution; Country represented (Myanmar); SDG(s) to achieve (SDG 11, SDG
+  13); brief description.
 - **Charts**: none (cover page). Visual accent only.
 - **Key takeaway**: a credible, data-driven approach to urban flood resilience.
 
@@ -39,10 +39,11 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 - **Objective**: why urban flooding is a serious ASEAN problem now.
 - **Headline**: Urban floods threaten lives, services and economies across ASEAN.
 - **Evidence**: regional flood-event counts from `sac_flood_events.csv`
-  (Dartmouth Flood Observatory); Jakarta's documented major flood years
-  (2002, 2007, 2013, 2020, 2025) as context flags.
-- **Charts**: line/column of `n_flood_events_indonesia` by year (SAC).
-- **KPI**: documented flood years in Jakarta; national flood event count.
+  (Dartmouth Flood Observatory, 33 Myanmar events 1985-2023); Yangon's
+  documented major flood years (1988, 1991, 1997, 2002, 2004, 2007, 2008,
+  2010, 2013, 2014, 2015, 2017, 2019, 2020) as context flags.
+- **Charts**: line/column of `n_flood_events_myanmar` by year (SAC).
+- **KPI**: documented flood years in Yangon; national flood event count.
 - **Source**: DFO archive; cited on References page.
 - **Key takeaway**: recurrent, severe urban flooding justifies a systematic
   analytical response.
@@ -63,7 +64,7 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 ## Page 4 — Research question
 
 - **Objective**: state the question the analysis answers.
-- **Headline**: Which Jakarta districts face the highest flood risk, who and
+- **Headline**: Which Yangon townships face the highest flood risk, who and
   what is exposed, and where should investments be prioritised?
 - **Sub-questions**: where/when are rainfall extremes; historical flood
   frequency; population & infrastructure exposure; vulnerability; can an ML
@@ -75,11 +76,11 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 
 - **Objective**: demonstrate credible, sourced, open data.
 - **Headline**: All inputs are public, traceable data.
-- **Evidence**: source families — CHIRPS rainfall (1981-2026), Copernicus DEM
+- **Evidence**: source families — CHIRPS rainfall (1981-present), Copernicus DEM
   30 m, Kontur population, WorldPop age structure, HDX/OSM facilities, World
   Bank/GFDRR rainfall indices, DFO flood archive, official boundaries.
 - **Charts**: optional simple count visuals (e.g., number of rainfall months =
-  547, kecamatan = 42) as SAC tables/numbers.
+  547, townships = 45) as SAC tables/numbers.
 - **Source**: `data/source_catalog.csv`; full list on References page.
 - **Key takeaway**: the analysis rests on verifiable data — no invented figures.
 
@@ -98,37 +99,38 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 
 - **Objective**: show the seasonal and multi-year rainfall pattern.
 - **Headline**: Rainfall is strongly seasonal — and flood years are wet years.
-- **Evidence**: `sac_rainfall_timeseries.csv` (547 months).
+- **Evidence**: `sac_rainfall_timeseries.csv` (547 months, 1981-2026).
 - **Charts**:
   - Line: monthly `rainfall_mm` over time (SAC).
-  - Column by `month`: climatology showing Nov-Mar peak.
-  - Column by `year` with `documented_flood_year` highlight: 2002/2007/2013/
-    2020/2025 were wetter than the 1981-2025 mean (2,680 vs 2,407 mm/yr).
+  - Column by `month`: climatology showing the Jun-Sep monsoon peak.
+  - Column by `year` with `documented_flood_year` highlight: documented flood
+    years were wetter than the long-run mean.
 - **Key takeaway**: seasonal hazard windows are identifiable in the data.
 - **Note**: correlation is not causation — reported as association only.
 
 ## Page 8 — Spatial findings
 
 - **Objective**: show where risk concentrates.
-- **Headline**: Low-lying northern and eastern districts rank highest.
-- **Evidence**: `sac_risk_by_area.csv`; `elev_mean_m` gradient (min -17.0 m in
-  Pademangan; max 56.6 m in Jagakarsa).
+- **Headline**: Low-lying delta-fringe townships rank highest.
+- **Evidence**: `sac_risk_by_area.csv`; elevation gradient from below sea level
+  (min -9.2 m in Hlaingtharya) to higher ground inland (max mean 37.5 m in
+  Taikkyi).
 - **Charts**:
   - Geo choropleth by `risk_class` (map).
-  - Scatter: `elev_mean_m` vs `risk_100`, colored by `kota`.
+  - Scatter: `elev_mean_m` vs `risk_100`, colored by `district`.
 - **Key takeaway**: hazard (elevation) visibly tracks risk ranking.
 
 ## Page 9 — Population & infrastructure exposure
 
 - **Objective**: quantify who and what is at risk.
-- **Headline**: ~3.2M people live in the highest-risk class; schools and health
+- **Headline**: ~2.6M people live in the highest-risk class; schools and health
   facilities are spread city-wide.
 - **Evidence**: `sac_population_exposure.csv`, `sac_infrastructure_exposure.csv`;
-  4,685 schools, 780 health facilities across 42 kecamatan; top risk class
-  population 3,241,578 (30.9% of Jakarta).
+  1,320 schools, 1,178 health facilities across 45 townships; top risk class
+  population 2,604,699 (31.3% of Yangon).
 - **Charts**:
-  - Geo bubble map: `pop_est` by kecamatan (SAC geo).
-  - Stacked column: `schools` + `health_facilities` by `kota`.
+  - Geo bubble map: `pop_est` by township (SAC geo).
+  - Stacked column: `schools` + `health_facilities` by `district`.
 - **Key takeaway**: exposure is concentrated where hazard is high → targeted
   investment is justified.
 
@@ -136,21 +138,21 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 
 - **Objective**: show the composite ranking and its decomposition.
 - **Headline**: A transparent, weighted, sensitivity-tested risk index.
-- **Evidence**: `sac_risk_by_area.csv`; top-ranked kecamatan e.g. Cakung (58.2
-  / 100) under default weights.
+- **Evidence**: `sac_risk_by_area.csv`; top-ranked township Thongwa (56.8 / 100)
+  under default weights.
 - **Charts**:
-  - Bar: top-10 kecamatan by `risk_100` (SAC).
+  - Bar: top-10 townships by `risk_100` (SAC).
   - Radar or 100% stacked column: `hazard` / `exposure` / `vulnerability` for
     top-10.
-  - Table: full 42-row ranking with `pop_est`, `schools`, `health_facilities`.
+  - Table: full 45-row ranking with `pop_est`, `schools`, `health_facilities`.
 - **Key takeaway**: ranking is explainable and stable under alternative weights.
 
 ## Page 11 — Key insights
 
 - **Objective**: distil the story into defensible findings.
-- **Headline**: Nine evidence-backed insights (seasonality, elevation gradient,
+- **Headline**: Ten evidence-backed insights (seasonality, elevation gradient,
   exposure concentration, flood-year wetness, facility spread, recent rainfall
-  intensity).
+  intensity, national flood context).
 - **Evidence**: `outputs/reports/key_insights.md`.
 - **Charts**: supporting SAC charts from Pages 7-10 (reused) or summary KPIs.
 - **Key takeaway**: each insight carries a metric, source, interpretation and
@@ -183,7 +185,7 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 - **Evidence**: `docs/asean_scalability.md`; common (global raster) vs local
   layers; replication procedure.
 - **Charts**: optional schematic of common vs local layers.
-- **Key takeaway**: Jakarta is the validated pilot; the framework is the
+- **Key takeaway**: Yangon is the validated pilot; the framework is the
   product.
 
 ## Page 15 — Conclusion

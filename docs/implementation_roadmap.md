@@ -12,7 +12,7 @@ Status: design document.
 
 Already delivered in this repository:
 
-- Jakarta kecamatan risk + exposure datasets (real, public data).
+- Yangon township risk + exposure datasets (real, public data).
 - Reproducible Python pipeline (`floodresilience/`).
 - SAC-ready exports (`data/sac/`).
 - Interactive SvelteKit prototype (dashboard, risk explorer, map, scenarios).
@@ -21,17 +21,17 @@ Already delivered in this repository:
 **Exit criteria**: storyboard submitted; prototype link live; judge Q&A pack
 ready.
 
-## Phase 1 — Data foundation (pilot city, e.g. Jakarta)
+## Phase 1 — Data foundation (pilot city, Yangon Region)
 
 Objective: turn the prototype into an agreed municipal dataset.
 
 | Work package | Deliverable | Owner suggestion | Dependency |
 |---|---|---|---|
-| Boundary & code alignment | Official kecamatan/kelurahan codes from BPS | Statistics agency | - |
-| Rainfall validation | CHIRPS vs BMKG gauge comparison | Met agency | Gauge data sharing |
+| Boundary & code alignment | Official township P-codes from MIMU | MIMU / statistics agency | - |
+| Rainfall validation | CHIRPS vs DMH gauge comparison | DMH (Meteorology & Hydrology) | Gauge data sharing |
 | Flood-event validation | Cross-check DFO/GFD extents vs agency records | Disaster agency | Event archives |
 | Facility coverage audit | Compare OSM counts vs official registers | City planning dept | Facility registers |
-| Vulnerability expansion | District poverty / tenure indicators if released open | Statistics agency | Open data policy |
+| Vulnerability expansion | Township poverty / tenure indicators if released open | Statistics agency | Open data policy |
 
 **Exit criteria**: an audited, versioned city dataset with documented
 validation (not just our global-raster baseline).

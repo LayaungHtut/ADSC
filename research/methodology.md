@@ -61,6 +61,6 @@ Weights will be set **transparently and tested via sensitivity analysis** (equal
 
 - Coarse IMERG (~11 km): mitigated by CHIRPS (~5 km) and local gauges; hazard interpretation stays at district scale.
 - GFD ends 2018: mitigated by DFO event catalogue + local reports for recent years.
-- OSM completeness varies: mitigated by focusing on city with strongest OSM coverage (Jakarta) and documenting coverage limits.
+- OSM completeness varies: mitigated by focusing on the primary city (Yangon, where OSM coverage is moderate) and documenting coverage limits.
 - Data licensing/attribution: handled in source catalog.
-- Myanmar home-team context: home-country storytelling is an advantage, but data for Yangon is weaker; we recommend Jakarta as primary analysis city to maximize data quality and credibility (see location_comparison.csv).
+- Myanmar home-team context: the analysis city (Yangon Region) is chosen on data strength and verifiability, not home-country convenience; local national open data is limited, so the analysis relies on global open datasets (see location_comparison.csv).

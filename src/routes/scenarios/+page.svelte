@@ -24,14 +24,14 @@
 </script>
 
 <svelte:head>
-	<title>Scenarios — FloodResilience Jakarta</title>
+	<title>Scenarios — FloodResilience Yangon</title>
 </svelte:head>
 
 <section class="mb-6">
 	<h1 class="text-3xl font-bold tracking-tight">Scenario explorer</h1>
 	<p class="mt-2 max-w-3xl text-slate-600">
 		Explore how changes to rainfall, population and infrastructure resilience would re-rank flood
-		risk across Jakarta's 42 kecamatan.
+		risk across Yangon's 45 townships.
 	</p>
 </section>
 
@@ -121,7 +121,7 @@
 	<div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 		<p class="text-sm text-slate-500">Highest scenario risk</p>
 		<p class="mt-1 text-2xl font-bold">{top[0]?.scenario_risk.toFixed(1) ?? '—'}</p>
-		<p class="text-xs text-slate-400">{top[0]?.kecamatan ?? ''}</p>
+		<p class="text-xs text-slate-400">{top[0]?.township ?? ''}</p>
 	</div>
 	<div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 		<p class="text-sm text-slate-500">Class changed</p>
@@ -138,7 +138,7 @@
 		<table class="min-w-full divide-y divide-slate-200 text-sm">
 			<thead class="text-left text-xs font-semibold tracking-wide text-slate-500 uppercase">
 				<tr>
-					<th class="px-4 py-3">Kecamatan</th>
+					<th class="px-4 py-3">Township</th>
 					<th class="px-4 py-3">Baseline risk</th>
 					<th class="px-4 py-3">Scenario risk</th>
 					<th class="px-4 py-3">Change</th>
@@ -146,9 +146,9 @@
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-slate-100">
-				{#each top as r (r.kec_code)}
+				{#each top as r (r.tship_code)}
 					<tr>
-						<td class="px-4 py-3 font-medium text-slate-800">{r.kecamatan}</td>
+						<td class="px-4 py-3 font-medium text-slate-800">{r.township}</td>
 						<td class="px-4 py-3 text-slate-600">{r.baseline_risk.toFixed(1)}</td>
 						<td class="px-4 py-3 font-semibold text-slate-800">{r.scenario_risk.toFixed(1)}</td>
 						<td class="px-4 py-3" style="color: {r.risk_delta >= 0 ? '#dc2626' : '#059669'}">
@@ -174,8 +174,8 @@
 <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
 	<h2 class="mb-2 text-lg font-semibold">How this is calculated</h2>
 	<p class="text-sm leading-relaxed text-slate-600">
-		Each scenario perturbs the raw indicators, re-normalizes them with min-max scaling across the 42
-		kecamatan, and recomputes the documented risk model:
+		Each scenario perturbs the raw indicators, re-normalizes them with min-max scaling across the 45
+		townships, and recomputes the documented risk model:
 	</p>
 	<ul class="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
 		<li>

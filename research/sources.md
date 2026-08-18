@@ -36,7 +36,7 @@ This document lists candidate data sources for FloodResilience ASEAN. The full m
 
 ## National / local sources
 
-- **Jakarta Open Data Portal** (`VERIFIED` existence) — data.jakarta.go.id. Local flood reports, population, facilities. Strong for the primary location.
+- **Jakarta Open Data Portal** (`VERIFIED` existence) — data.jakarta.go.id. Local flood reports, population, facilities. Relevant as a comparison city in the ASEAN replication framework.
 - **BMKG Indonesia** (`VERIFIED` existence) — dataonline.bmkg.go.id, station rainfall.
 - **PAGASA Philippines** (`VERIFIED` existence) — pagasa.dost.gov.ph.
 - **Thai Meteorological Dept** (`VERIFIED` existence) — tmd.go.th.

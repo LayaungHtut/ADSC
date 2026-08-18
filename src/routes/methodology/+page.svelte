@@ -31,14 +31,14 @@
 </script>
 
 <svelte:head>
-	<title>Methodology — FloodResilience Jakarta</title>
+	<title>Methodology — FloodResilience Yangon</title>
 </svelte:head>
 
 <section class="mb-8">
 	<h1 class="text-3xl font-bold tracking-tight">Methodology</h1>
 	<p class="mt-2 max-w-3xl text-slate-600">
 		How the composite flood-risk index is computed. Every component is normalized to a 0-1 scale
-		using min-max scaling across the 42 urban kecamatan, then combined with documented weights.
+		using min-max scaling across the 45 urban townships, then combined with documented weights.
 		Scores are rescaled to 0-100 and assigned to quintile classes (1 = lowest .. 5 = highest).
 	</p>
 </section>
@@ -86,7 +86,7 @@
 				<tr>
 					<td class="py-2 font-medium">Vulnerability inputs</td>
 					<td class="py-2 text-slate-600">
-						Share of children under 15 and elderly over 65 (kota-level from WorldPop ADM2)
+						Share of children under 15 and elderly over 65 (district-level from WorldPop ADM2)
 					</td>
 				</tr>
 			</tbody>
@@ -124,16 +124,16 @@
 	<h2 class="mb-2 text-lg font-semibold text-amber-900">Limitations</h2>
 	<ul class="list-disc space-y-1.5 pl-5 text-sm text-amber-800">
 		<li>
-			Vulnerability is computed at kota level, so all kecamatan in the same city share an identical
-			score.
+			Vulnerability is computed at district level, so all townships in the same district share an
+			identical score.
 		</li>
-		<li>CHIRPS rainfall has ~5.5 km resolution — coarse for intra-district differences.</li>
+		<li>CHIRPS rainfall has ~5.5 km resolution — coarse for intra-township differences.</li>
 		<li>
-			No district-level poverty or socioeconomic data was available from open sources (BPS
-			restricted access).
+			No township-level poverty or socioeconomic data was available from open sources (Myanmar's
+			official statistics are restricted).
 		</li>
 		<li>
-			Observed flood-extent polygons are not available at kecamatan level; hazard relies on rainfall
+			Observed flood-extent polygons are not available at township level; hazard relies on rainfall
 			+ elevation proxies.
 		</li>
 		<li>

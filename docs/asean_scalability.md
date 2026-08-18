@@ -1,8 +1,8 @@
 # ASEAN Scalability — FloodResilience ASEAN
 
-How the Jakarta proof-of-concept becomes a replicable ASEAN framework.
+How the Yangon proof-of-concept becomes a replicable ASEAN framework.
 
-Status: design document. No data is fabricated; the Jakarta figures cited here
+Status: design document. No data is fabricated; the Yangon figures cited here
 are from the actual processed datasets (see `data/processed/` and
 `outputs/reports/key_insights.md`).
 
@@ -17,15 +17,15 @@ analytical stage is data-driven and parameterised by city:
 city config  ->  data pipeline  ->  risk model  ->  SAC-ready datasets  ->  decision tool
 ```
 
-For Jakarta the parameters are fixed (bbox, admin boundaries, thresholds).
+For Yangon the parameters are fixed (bbox, admin boundaries, thresholds).
 For another ASEAN city, only the configuration layer changes — the code path is
 identical. This is what makes the approach scalable.
 
-## 2. The Jakarta recipe (what we validated)
+## 2. The Yangon recipe (what we validated)
 
-| Layer | Jakarta implementation | Source family |
+| Layer | Yangon implementation | Source family |
 |---|---|---|
-| Boundaries | 42 urban kecamatan (GeoBoundaries / Alf-Anas) | local + global |
+| Boundaries | 45 townships (ADM3) of Yangon Region (GeoBoundaries) | local + global |
 | Rainfall | CHIRPS v2.0 monthly, 1981-2026, bbox zonal means | CHIRPS (global) |
 | Elevation | Copernicus DEM GLO-30 zonal stats | Copernicus (global) |
 | Population | Kontur H3 area-weighted; WorldPop ADM2 age shares | Kontur / WorldPop (global) |
@@ -39,7 +39,7 @@ Phnom Penh.
 
 ## 3. Common vs local layers
 
-### Common layers (already validated for Jakarta, portable as-is)
+### Common layers (already validated for Yangon, portable as-is)
 
 - Climate: CHIRPS / GPM IMERG rainfall (global).
 - Geography: Copernicus DEM, ESA WorldCover, JRC water (global).
@@ -78,7 +78,7 @@ baseline. Local layers then sharpen validity, never replace the baseline.
 1. Define a city config (`bbox`, admin boundary source, analysis-unit level).
 2. Run the shared acquisition script for rainfall / DEM / population /
    infrastructure / flood events.
-3. Run zonal statistics (same code as Jakarta).
+3. Run zonal statistics (same code as Yangon).
 4. Run the risk index with the documented weights; run the sensitivity analysis.
 5. Validate against local records (rainfall gauges, documented flood years).
 6. Export SAC-ready CSVs; load into SAC; rebuild the storyboard with local
@@ -92,7 +92,7 @@ whatever `src/lib/data/*.json` contains, so the same UI serves any city.
 ## 5. Scaling dimensions
 
 - **Geographic scaling**: one city → many cities → national → regional.
-- **Analytic scaling**: from kecamatan-level risk to neighbourhood grids where
+- **Analytic scaling**: from township-level risk to neighbourhood grids where
   finer hazard rasters (GFD, GPM) support it.
 - **Temporal scaling**: from static risk maps toward near-real-time rainfall
   screening using CHIRPS/GPM streaming (clearly labelled, not a forecast).
@@ -101,12 +101,12 @@ whatever `src/lib/data/*.json` contains, so the same UI serves any city.
 
 ## 6. What does NOT scale automatically (honesty)
 
-- Vulnerability proxies are kota-level for Jakarta and will differ per country.
+- Vulnerability proxies are district-level for Yangon and will differ per country.
 - OSM completeness varies; facility counts need a coverage audit per city.
 - A single flood-risk formula cannot capture local hydrology (tides, drainage,
   subsidence) without local calibration.
 - The ML experiment (see `outputs/reports/model_evaluation.md`) is descriptive
-  for Jakarta; it must be re-run and re-validated for any other city.
+  for Yangon; it must be re-run and re-validated for any other city.
 
 ## 7. ASEAN policy alignment
 
@@ -122,4 +122,4 @@ whatever `src/lib/data/*.json` contains, so the same UI serves any city.
 
 Every claim above is either a statement of the implemented codebase or labelled
 as a design proposal. Nothing here asserts validated results for cities other
-than Jakarta.
+than Yangon.

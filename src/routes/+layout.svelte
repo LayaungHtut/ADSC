@@ -10,7 +10,7 @@
 		{ href: '/risk', label: 'Risk explorer' },
 		{ href: '/map', label: 'Risk map' },
 		{ href: '/scenarios', label: 'Scenarios' },
-		{ href: '/locations', label: 'Kecamatan' },
+		{ href: '/locations', label: 'Townships' },
 		{ href: '/methodology', label: 'Methodology' },
 		{ href: '/data', label: 'Data' },
 		{ href: '/about', label: 'About' }
@@ -23,10 +23,10 @@
 </script>
 
 <svelte:head>
-	<title>FloodResilience Jakarta — Urban Flood Risk Dashboard</title>
+	<title>FloodResilience Yangon — Urban Flood Risk Dashboard</title>
 	<meta
 		name="description"
-		content="Data-driven flood risk intelligence for Jakarta's 42 urban kecamatan (ASEAN Data Science Explorers 2026)."
+		content="Data-driven flood risk intelligence for Yangon's 45 urban townships (ASEAN Data Science Explorers 2026)."
 	/>
 </svelte:head>
 
@@ -40,7 +40,7 @@
 					FR
 				</span>
 				<span class="text-base font-bold tracking-tight">
-					FloodResilience <span class="text-sky-600">Jakarta</span>
+					FloodResilience <span class="text-sky-600">Yangon</span>
 				</span>
 			</a>
 			<nav class="hidden items-center gap-1 md:flex">
@@ -77,7 +77,7 @@
 	<footer class="border-t border-slate-200 bg-white">
 		<div class="mx-auto max-w-6xl px-4 py-6 text-xs leading-relaxed text-slate-500">
 			<p class="font-semibold text-slate-700">
-				FloodResilience ASEAN — Urban Flood Risk Intelligence for Jakarta
+				FloodResilience ASEAN — Urban Flood Risk Intelligence for Yangon
 			</p>
 			<p>
 				Student project for the ASEAN Data Science Explorers 2026 competition. All figures derive

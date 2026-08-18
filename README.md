@@ -6,7 +6,7 @@ Student project for the **ASEAN Data Science Explorers 2026** competition.
 Two-person team representing **Myanmar**. Primary SDGs: **SDG 11** (Sustainable
 Cities and Communities) and **SDG 13** (Climate Action).
 
-The analysis city is **Jakarta, Indonesia** — selected in Phase 1 on evidence
+The analysis city is **Yangon Region, Myanmar** — selected in Phase 1 on evidence
 strength (data availability, verifiability, documented flood history), not on
 home-country convenience. The framework is designed to replicate across ASEAN
 cities (see `docs/asean_scalability.md`).
@@ -22,7 +22,7 @@ cities (see `docs/asean_scalability.md`).
 Urban flooding in ASEAN threatens lives, critical infrastructure and economic
 activity. Cities need a defensible, data-driven way to know **where** risk is
 highest, **who/what** is exposed, **when** hazards peak, and **what** to do
-first. This project answers those questions for Jakarta and demonstrates how
+first. This project answers those questions for Yangon and demonstrates how
 the method scales across ASEAN.
 
 ## 2. Approach
@@ -43,14 +43,14 @@ VERIFIED DATA → Python pipeline → risk model → SAC storyboard + SvelteKit 
 
 | Finding | Value | Source |
 |---|---|---|
-| Kecamatan assessed | 42 urban districts of DKI Jakarta | `data/processed/` |
-| Modelled population | ~10.5 M (42 urban kecamatan) | Kontur H3, area-weighted |
-| Population in highest risk class | ~3.24 M (30.9%) | risk scores + population |
-| Rainfall months analysed | 547 (1981-2026) | CHIRPS v2.0 |
-| Top-ranked district | Cakung (58.2 / 100) | default weights |
-| Elevation range | -17.0 m (Pademangan) … 56.6 m (Jagakarsa) | Copernicus DEM 30 m |
-| Facilities | 4,685 schools, 780 health facilities | HDX/OSM |
-| Documented flood years | 2002, 2007, 2013, 2020, 2025 — wetter than the 1981-2025 mean (2,680 vs 2,407 mm/yr) | DFO + CHIRPS |
+| Townships assessed | 45 townships of Yangon Region | `data/processed/` |
+| Modelled population | ~8.32 M (45 townships) | Kontur H3, area-weighted |
+| Population in highest risk class | ~31.3% (class 5) | risk scores + population |
+| Rainfall months analysed | 245 (1981-2001) | CHIRPS v2.0 |
+| Top-ranked township | Thongwa (56.8 / 100) | default weights |
+| Elevation range | -9.2 m … 487.5 m (township min/max) | Copernicus DEM 30 m |
+| Facilities | 1,320 schools, 1,178 health facilities | HDX/OSM (Myanmar) |
+| Documented flood years | 1988, 1991, 1997, 2002, 2004, 2007, 2008, 2010, 2013, 2014, 2015, 2017, 2019, 2020 | PIAHS 386, Sritarapipat 2017, OCHA, UNOSAT |
 
 Full narrative: `outputs/reports/key_insights.md`.
 
@@ -61,7 +61,7 @@ Risk = 0.40 · Hazard + 0.35 · Exposure + 0.25 · Vulnerability
 - **Hazard:** elevation (inverse), annual rainfall, extreme-rainfall month count,
   recent rainfall-flood index (World Bank/GFDRR).
 - **Exposure:** population, density, schools, health facilities.
-- **Vulnerability:** children (<15) and elderly (65+) shares (kota-level).
+- **Vulnerability:** children (<15) and elderly (65+) shares (district-level).
 
 All components min-max normalised to [0,1]; classes are quintiles (no arbitrary
 thresholds); five weighting schemes are sensitivity-tested. Details:
@@ -91,7 +91,7 @@ tests/            Python + SvelteKit tests
 | Facilities | HDX / OSM school & health points | ODbL/HDX |
 | Rainfall-flood index | World Bank / GFDRR subnational | open |
 | Flood events | Dartmouth Flood Observatory | free academic |
-| Boundaries | GeoBoundaries / Alf-Anas (official BPS codes) | open |
+| Boundaries | GeoBoundaries Myanmar (ADM1/2/3), MIMU codes | open |
 
 Full catalogue with URLs and limitations: `data/source_catalog.csv`. Download
 log with SHA-256: `data/raw/PROVENANCE.csv`.
@@ -129,7 +129,7 @@ npm run preview    # preview production build
 ```
 
 Routes: `/` (dashboard), `/risk` (explorer), `/map`, `/scenarios`,
-`/locations` (+ per-kecamatan), `/methodology`, `/data`, `/about`.
+`/locations` (+ per-township), `/methodology`, `/data`, `/about`.
 
 Quality gates:
 
@@ -143,10 +143,10 @@ npm test           # vitest unit tests
 
 `floodresilience/models/extreme_rainfall.py` answers a strictly scoped
 question: *can lagged rainfall classify extreme-rainfall months (≥ p95) at the
-Jakarta bbox scale?* It uses a temporal train/test split (train ≤2005, test
+Yangon bbox scale?* It uses a temporal train/test split (train ≤2005, test
 >2005), no target leakage, a majority-class baseline, and reports
-precision/recall/F1/ROC-AUC/PR-AUC. A kecamatan-level flood classifier is
-**not** attempted because no reliable per-district flood label exists in the
+precision/recall/F1/ROC-AUC/PR-AUC. A township-level flood classifier is
+**not** attempted because no reliable per-township flood label exists in the
 open data. Full evaluation: `outputs/reports/model_evaluation.md`.
 
 ## 10. SAC workflow
@@ -165,9 +165,9 @@ open data. Full evaluation: `outputs/reports/model_evaluation.md`.
 
 ## 12. Limitations (summary)
 
-- Vulnerability is kota-level, not kecamatan-level.
-- CHIRPS rainfall is ~5.5 km — coarse for intra-district differences.
-- No district-level poverty/socioeconomic open data for Jakarta.
+- Vulnerability is district-level, not township-level.
+- CHIRPS rainfall is ~5.5 km — coarse for intra-township differences.
+- No township-level poverty/socioeconomic open data for Yangon.
 - Modelled population (Kontur/WorldPop) is an estimate, not a census.
 - OSM facility counts may undercount informal facilities.
 - Correlations are reported as associations, never causation.

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { RISK_CLASS_COLORS, RISK_CLASS_LABELS, riskColor } from '$lib/data';
-	import type { KecFeature } from '$lib/types';
+	import type { TshipFeature } from '$lib/types';
 	import riskJson from '$lib/data/risk.json';
 	import type * as L from 'leaflet';
 
@@ -20,10 +20,10 @@
 	let layer: L.GeoJSON | undefined = $state();
 	let cleanup: (() => void) | undefined;
 
-	const geojson = riskJson as unknown as { type: 'FeatureCollection'; features: KecFeature[] };
+	const geojson = riskJson as unknown as { type: 'FeatureCollection'; features: TshipFeature[] };
 
 	function styleFor(
-		f: { properties: { risk_class: number; kec_code: string } },
+		f: { properties: { risk_class: number; tship_code: string } },
 		highlight: boolean
 	): L.PathOptions {
 		const cls = f.properties.risk_class;
@@ -40,7 +40,7 @@
 		const L = (await import('leaflet')).default;
 		await import('leaflet/dist/leaflet.css');
 		if (!container) return;
-		map = L.map(container, { scrollWheelZoom: false }).setView([-6.21, 106.845], 10);
+		map = L.map(container, { scrollWheelZoom: false }).setView([16.8713, 96.1561], 10);
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 19,
 			attribution: '&copy; OpenStreetMap contributors'
@@ -48,12 +48,12 @@
 		layer = L.geoJSON(geojson as unknown as GeoJSON.GeoJsonObject, {
 			style: (f) =>
 				styleFor(
-					f as { properties: { risk_class: number; kec_code: string } },
-					(f as { properties: { kec_code: string } }).properties.kec_code === selected
+					f as { properties: { risk_class: number; tship_code: string } },
+					(f as { properties: { tship_code: string } }).properties.tship_code === selected
 				),
 			onEachFeature: (f, l: L.Layer) => {
-				l.on('click', () => onselect(f.properties.kec_code));
-				l.bindTooltip(`${f.properties.kecamatan} — risk ${f.properties.risk_score.toFixed(1)}`, {
+				l.on('click', () => onselect(f.properties.tship_code));
+				l.bindTooltip(`${f.properties.township} — risk ${f.properties.risk_score.toFixed(1)}`, {
 					sticky: true
 				});
 			}
@@ -69,9 +69,9 @@
 		if (!layer) return;
 		layer.eachLayer((l) => {
 			const path = l as L.Path & {
-				feature: { properties: { risk_class: number; kec_code: string } };
+				feature: { properties: { risk_class: number; tship_code: string } };
 			};
-			path.setStyle(styleFor(path.feature, path.feature.properties.kec_code === sel));
+			path.setStyle(styleFor(path.feature, path.feature.properties.tship_code === sel));
 		});
 	});
 </script>

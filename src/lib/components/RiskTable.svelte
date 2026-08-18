@@ -7,19 +7,19 @@
 	let props = $props<{ rows: RiskSummary[]; searchable?: boolean }>();
 
 	let query = $state('');
-	let kotaFilter = $state('all');
+	let districtFilter = $state('all');
 	let sortKey = $state<keyof RiskSummary>('risk_score');
 	let sortDesc = $state(true);
 
-	const kotas = $derived([...new Set(props.rows.map((r: RiskSummary) => r.kota))].sort());
+	const districts = $derived([...new Set(props.rows.map((r: RiskSummary) => r.district))].sort());
 
 	const visible = $derived(
 		props.rows
 			.filter((r: RiskSummary) => {
-				if (kotaFilter !== 'all' && r.kota !== kotaFilter) return false;
+				if (districtFilter !== 'all' && r.district !== districtFilter) return false;
 				if (!props.searchable) return true;
 				const q = query.trim().toLowerCase();
-				return !q || r.kecamatan.toLowerCase().includes(q) || r.kec_code.includes(q);
+				return !q || r.township.toLowerCase().includes(q) || r.tship_code.includes(q);
 			})
 			.sort((a: RiskSummary, b: RiskSummary) => {
 				const av = a[sortKey];
@@ -46,8 +46,8 @@
 		return sortDesc ? ' ↓' : ' ↑';
 	}
 
-	async function openDetail(kecamatan: string) {
-		await goto(resolve(`/locations/${encodeURIComponent(kecamatan)}`));
+	async function openDetail(township: string) {
+		await goto(resolve(`/locations/${encodeURIComponent(township)}`));
 	}
 </script>
 
@@ -56,13 +56,13 @@
 		<input
 			type="search"
 			bind:value={query}
-			placeholder="Search kecamatan or code..."
+			placeholder="Search township or code..."
 			class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm sm:w-64"
 		/>
 	{/if}
-	<select bind:value={kotaFilter} class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+	<select bind:value={districtFilter} class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
 		<option value="all">All areas</option>
-		{#each kotas as k (k)}<option value={k}>{k}</option>{/each}
+		{#each districts as k (k)}<option value={k}>{k}</option>{/each}
 	</select>
 </div>
 
@@ -73,10 +73,10 @@
 		>
 			<tr>
 				<th class="px-4 py-3"
-					><button onclick={() => toggle('kecamatan')}>Kecamatan{arrow('kecamatan')}</button></th
+					><button onclick={() => toggle('township')}>Township{arrow('township')}</button></th
 				>
 				<th class="px-4 py-3"
-					><button onclick={() => toggle('kota')}>Area{arrow('kota')}</button></th
+					><button onclick={() => toggle('district')}>District{arrow('district')}</button></th
 				>
 				<th class="px-4 py-3"
 					><button onclick={() => toggle('risk_score')}>Risk{arrow('risk_score')}</button></th
@@ -100,10 +100,10 @@
 			</tr>
 		</thead>
 		<tbody class="divide-y divide-slate-100">
-			{#each visible as r (r.kec_code)}
-				<tr class="cursor-pointer hover:bg-sky-50" onclick={() => openDetail(r.kecamatan)}>
-					<td class="px-4 py-3 font-medium text-slate-800">{r.kecamatan}</td>
-					<td class="px-4 py-3 text-slate-500">{r.kota}</td>
+			{#each visible as r (r.tship_code)}
+				<tr class="cursor-pointer hover:bg-sky-50" onclick={() => openDetail(r.township)}>
+					<td class="px-4 py-3 font-medium text-slate-800">{r.township}</td>
+					<td class="px-4 py-3 text-slate-500">{r.district}</td>
 					<td class="px-4 py-3 font-semibold text-slate-800">{r.risk_score.toFixed(1)}</td>
 					<td class="px-4 py-3">
 						<span
@@ -127,7 +127,7 @@
 			{/each}
 			{#if visible.length === 0}
 				<tr
-					><td colspan="8" class="px-4 py-8 text-center text-slate-400">No matching kecamatan.</td
+					><td colspan="8" class="px-4 py-8 text-center text-slate-400">No matching township.</td
 					></tr
 				>
 			{/if}

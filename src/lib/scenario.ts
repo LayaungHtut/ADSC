@@ -31,9 +31,9 @@ export interface ScenarioInputs {
 }
 
 export interface ScenarioResultRow {
-	kec_code: string;
-	kecamatan: string;
-	kota: string;
+	tship_code: string;
+	township: string;
+	district: string;
 	baseline_risk: number;
 	baseline_class: number;
 	scenario_risk: number;
@@ -111,9 +111,9 @@ export function runScenario(inputs: ScenarioInputs): ScenarioResultRow[] {
 	const scenClass = quantileClass(scenScores);
 
 	return features.map((r, i) => ({
-		kec_code: r.kec_code,
-		kecamatan: r.kecamatan,
-		kota: r.kota,
+		tship_code: r.tship_code,
+		township: r.township,
+		district: r.district,
 		baseline_risk: baseScores[i],
 		baseline_class: baseClass[i],
 		scenario_risk: scenScores[i],

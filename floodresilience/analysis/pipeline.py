@@ -1,14 +1,16 @@
-"""Core analysis pipeline: build the per-kecamatan dataset for DKI Jakarta.
+"""Core analysis pipeline: build the per-township dataset for Yangon Region, Myanmar.
 
 Stages:
-  1. Load & validate administrative boundaries (44 kecamatan).
+  1. Load & validate administrative boundaries (45 townships, geoBoundaries ADM3)
+     and assign each township to its Yangon district (ADM2).
   2. CHIRPS monthly rainfall -> zonal series (1981-2026) + derived climate
      indicators (annual total, wet-season share, extreme-month count, trend).
-  3. Copernicus DEM -> elevation stats (mean/min/max).
-  4. Population: Kontur H3 (current) area-weighted, WorldPop/ADM2 totals.
-  5. Infrastructure: schools + health facilities counts.
+  3. Copernicus DEM -> elevation stats (mean/min/max) + slope.
+  4. Population: Kontur H3 (current) area-weighted.
+  5. Infrastructure: schools + health facilities counts (HDX / OSM, Myanmar).
   6. Flood-related rainfall indicators (World Bank / GFDRR, ADM2).
-  7. Persist `data/processed/jakarta_kecamatan_features.parquet`.
+  7. Age shares (children/elderly) from WorldPop ADM2 (district level).
+  8. Persist `data/processed/yangon_township_features.parquet`.
 
 Every derived value is traceable to the raw source; no values are fabricated.
 """
@@ -29,37 +31,64 @@ from floodresilience.config import (
     DATA_PROCESSED,
     DATA_RAW,
     DATA_INTERMEDIATE,
-    JAKARTA_BBOX,
+    YANGON_BBOX,
     CRS_WGS84,
+    CRS_UTM,
 )
 from floodresilience.cleaning.quality import QCResult, run_qc, write_qc_report, save_qc_json
 
-BOUNDARY_SRC = DATA_RAW / "boundaries" / "alfanas" / "DKI_Jakarta_kecamatan.geojson"
-CHIRPS_DIR = DATA_INTERMEDIATE / "rainfall" / "chirps"
+BOUNDARY_SRC = DATA_RAW / "boundaries" / "mmr" / "Yangon_townships.geojson"
+DISTRICT_SRC = DATA_RAW / "boundaries" / "mmr" / "MMR_ADM2.geojson"
+CHIRPS_DIR = DATA_INTERMEDIATE / "rainfall" / "chirps_yangon"
 DEM_FILES = sorted((DATA_RAW / "dem").glob("*.tif"))
-KONTUR = DATA_RAW / "population" / "kontur_population_ID_20231101.gpkg.u"
-ADMPOP = DATA_RAW / "population" / "idn_admpop_adm2_2020_v3.csv"
-WB_RAINFALL = DATA_RAW / "rainfall_indicator" / "idn-rainfall-subnat-5ytd.csv"
-EDU_DIR = DATA_RAW / "education" / "unzipped" / "IDN_school_facilities"
-HEALTH_GEOJSON = DATA_RAW / "health" / "unzipped" / "hotosm_idn_health_facilities_points_geojson.geojson"
-DFO = DATA_RAW / "dfo" / "Global_Flood_Records.csv"
+KONTUR = DATA_RAW / "population" / "kontur_population_MM_20231101.gpkg"
+ADMPOP = DATA_RAW / "population" / "mmr_admpop_adm2_2023.csv"
+WB_RAINFALL = DATA_RAW / "rainfall_indicator" / "mmr-rainfall-subnat-5ytd.csv"
+EDU_GEOJSON = DATA_RAW / "education" / "mmr" / "unzipped" / "education_facilities.geojson"
+HEALTH_GEOJSON = DATA_RAW / "health" / "mmr" / "unzipped" / "health_facilities.geojson"
+
+YANGON_ADM1 = "MMR013"
+
+
+def _make_tship_code(i: int) -> str:
+    """Stable synthetic township code derived from boundary order."""
+    return f"T{i + 1:02d}"
 
 
 def load_boundaries() -> gpd.GeoDataFrame:
     gdf = gpd.read_file(BOUNDARY_SRC)
-    gdf["kec_code"] = gdf["KODE_KEC"].astype(str).str.strip()
-    gdf["kecamatan"] = gdf["KECAMATAN"].str.title()
-    gdf["kota"] = gdf["KAB_KOTA"].str.replace("Kota Administrasi ", "", regex=False).str.title()
-    gdf = gdf[gdf["kota"] != "Administrasi Kepulauan Seribu"]
-    gdf = gdf.reset_index(drop=True)
-    return gdf[["kec_code", "kecamatan", "kota", "geometry"]]
+    gdf["tship_code"] = [_make_tship_code(i) for i in range(len(gdf))]
+    gdf["township"] = gdf["shapeName"].str.strip()
+    # Assign each township to its Yangon district (ADM2) by representative point.
+    dist = gpd.read_file(DISTRICT_SRC)
+    dist = dist[dist["shapeName"].astype(str).str.contains("Yangon", case=False, na=False)].copy()
+    dist["district"] = dist["shapeName"].str.replace("Yangon (", "", regex=False).str.replace(")", "", regex=False)
+    dist_code = {
+        "East": "MMR013D002",
+        "North": "MMR013D001",
+        "South": "MMR013D003",
+        "West": "MMR013D004",
+    }
+    dist["district_code"] = dist["district"].map(dist_code)
+    if dist["district_code"].isna().any():
+        raise ValueError("Unexpected Yangon district names in ADM2 boundaries")
+
+    pts = gdf.copy()
+    pts["geometry"] = pts.geometry.representative_point()
+    joined = gpd.sjoin(pts, dist[["district", "district_code", "geometry"]], how="left", predicate="within")
+    if joined["district"].isna().any():
+        missing = joined.loc[joined["district"].isna(), "township"].tolist()
+        raise ValueError(f"Townships not assigned to a district: {missing}")
+    gdf = gdf.merge(joined[["tship_code", "district", "district_code"]], on="tship_code", how="left")
+    gdf = gdf[["tship_code", "township", "district", "district_code", "geometry"]].reset_index(drop=True)
+    return gdf
 
 
 def chirps_zonal_series(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
-    """Compute mean monthly rainfall per kecamatan for every CHIRPS month."""
+    """Compute mean monthly rainfall per township for every CHIRPS month."""
     files = sorted(glob.glob(str(CHIRPS_DIR / "chirps_*.tif")))
     if not files:
-        raise FileNotFoundError("No CHIRPS tiles under data/intermediate/rainfall/chirps/")
+        raise FileNotFoundError("No CHIRPS tiles under data/intermediate/rainfall/chirps_yangon/")
 
     # Build per-polygon masks against the first raster grid.
     first = files[0]
@@ -85,7 +114,7 @@ def chirps_zonal_series(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
         for i, mask in enumerate(masks):
             vals = data[mask]
             vals = vals[~np.isnan(vals)]
-            rec[f"kec_{i}"] = float(vals.mean()) if vals.size else np.nan
+            rec[f"tship_{i}"] = float(vals.mean()) if vals.size else np.nan
         records.append(rec)
     df = pd.DataFrame(records)
     df["month"] = pd.to_datetime(df["month"])
@@ -94,15 +123,15 @@ def chirps_zonal_series(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
     return df
 
 
-def climate_indicators(series: pd.DataFrame, n_kec: int) -> pd.DataFrame:
-    """Derive per-kecamatan rainfall indicators from the monthly series."""
+def climate_indicators(series: pd.DataFrame, n_tship: int) -> pd.DataFrame:
+    """Derive per-township rainfall indicators from the monthly series."""
     rows: list[dict] = []
-    for i in range(n_kec):
-        col = f"kec_{i}"
+    for i in range(n_tship):
+        col = f"tship_{i}"
         s = series[["year", "month_of_year", col]].copy()
         s = s[s[col].notna()]
         if s.empty:
-            rows.append({"kec_idx": i})
+            rows.append({"tship_idx": i})
             continue
         # Annual totals (complete years only: months 1-12 present)
         counts = s.groupby("year")["month_of_year"].nunique()
@@ -110,7 +139,8 @@ def climate_indicators(series: pd.DataFrame, n_kec: int) -> pd.DataFrame:
         annual = s[s["year"].isin(complete_years)].groupby("year")[col].sum()
         # Monthly climatology
         clim = s.groupby("month_of_year")[col].mean()
-        wet_months = [12, 1, 2, 3]
+        # Yangon monsoon wet season: June-September.
+        wet_months = [6, 7, 8, 9]
         total = clim.sum()
         wet_share = clim.loc[[m for m in wet_months if m in clim.index]].sum() / total if total else np.nan
         # Extreme months: count of months above 95th percentile
@@ -127,7 +157,7 @@ def climate_indicators(series: pd.DataFrame, n_kec: int) -> pd.DataFrame:
             slope, trend_pct = np.nan, np.nan
         rows.append(
             {
-                "kec_idx": i,
+                "tship_idx": i,
                 "rain_annual_mean_mm": float(annual.mean()),
                 "rain_annual_last5_mean_mm": float(annual.iloc[-5:].mean()) if len(annual) >= 5 else np.nan,
                 "rain_wet_season_share": float(wet_share),
@@ -142,7 +172,7 @@ def climate_indicators(series: pd.DataFrame, n_kec: int) -> pd.DataFrame:
 
 
 def dem_stats(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
-    """Mosaic the four DEM tiles and compute elevation + slope stats per kecamatan."""
+    """Mosaic the DEM tiles and compute elevation + slope stats per township."""
     from rasterio.merge import merge
 
     if not DEM_FILES:
@@ -174,7 +204,7 @@ def dem_stats(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
         sv = sv[~np.isnan(sv)]
         rows.append(
             {
-                "kec_idx": i,
+                "tship_idx": i,
                 "elev_mean_m": float(ev.mean()) if ev.size else np.nan,
                 "elev_min_m": float(ev.min()) if ev.size else np.nan,
                 "elev_max_m": float(ev.max()) if ev.size else np.nan,
@@ -185,7 +215,7 @@ def dem_stats(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
 
 
 def population_exposure(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
-    """Area-weighted Kontur H3 population per kecamatan."""
+    """Area-weighted Kontur H3 population per township."""
     hex_gdf = gpd.read_file(KONTUR)
     # Reproject to boundaries CRS (WGS84) for intersection.
     hex_wgs = hex_gdf.to_crs(CRS_WGS84)
@@ -193,16 +223,16 @@ def population_exposure(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
     hex_ids = joined.index.unique()
     sub = hex_wgs.loc[hex_ids].copy()
 
-    # Ensure equal-area projection for area fractions
-    b_utm = boundaries.copy().to_crs("EPSG:32748")
-    sub_utm = sub.to_crs("EPSG:32748")
+    # Ensure equal-area projection for area fractions.
+    b_utm = boundaries.copy().to_crs(CRS_UTM)
+    sub_utm = sub.to_crs(CRS_UTM)
 
     rows = []
     for i in range(len(boundaries)):
         poly = b_utm.geometry.iloc[i]
         hits = sub_utm[sub_utm.intersects(poly)]
         if hits.empty:
-            rows.append({"kec_idx": i, "pop_est": 0.0})
+            rows.append({"tship_idx": i, "pop_est": 0.0})
             continue
         total = 0.0
         for _, h in hits.iterrows():
@@ -211,80 +241,78 @@ def population_exposure(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
                 continue
             frac = inter.area / h.geometry.area if h.geometry.area > 0 else 0.0
             total += float(h["population"]) * frac
-        rows.append({"kec_idx": i, "pop_est": total})
+        rows.append({"tship_idx": i, "pop_est": total})
     return pd.DataFrame(rows)
 
 
-def facility_counts(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
-    """Count schools and health facilities per kecamatan (points within polygon)."""
+def _count_facilities(boundaries: gpd.GeoDataFrame, src: Path) -> list[int]:
+    """Count OSM building polygons per township via representative points."""
     bbox = boundaries.total_bounds
+    gdf = gpd.read_file(src, bbox=tuple(bbox))
+    if len(gdf) == 0:
+        return [0] * len(boundaries)
+    gdf = gdf.to_crs(CRS_WGS84)
+    gdf["geometry"] = gdf.geometry.representative_point()
+    j = gpd.sjoin(gdf, boundaries[["geometry"]], how="inner", predicate="within")
+    counts = j.groupby("index_right").size()
+    return [int(counts.get(i, 0)) for i in range(len(boundaries))]
+
+
+def facility_counts(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
+    """Count schools and health facilities per township."""
     rows = []
-    # Schools
-    schools = None
-    for f in (EDU_DIR / "IDN_school_facilities.shp",):
-        if f.exists():
-            schools = gpd.read_file(f, bbox=tuple(bbox))
-    if schools is not None:
-        schools = schools.to_crs(CRS_WGS84)
-        sj = gpd.sjoin(schools, boundaries[["geometry"]], how="inner", predicate="within")
-        counts = sj.groupby("index_right").size()
-        for i in range(len(boundaries)):
-            rows.append({"kec_idx": i, "schools": int(counts.get(i, 0))})
+    if EDU_GEOJSON.exists():
+        schools = _count_facilities(boundaries, EDU_GEOJSON)
     else:
-        for i in range(len(boundaries)):
-            rows.append({"kec_idx": i, "schools": 0})
-    # Health
-    health = gpd.read_file(HEALTH_GEOJSON, bbox=tuple(bbox))
-    health = health.to_crs(CRS_WGS84)
-    hj = gpd.sjoin(health, boundaries[["geometry"]], how="inner", predicate="within")
-    hcounts = hj.groupby("index_right").size()
-    for r in rows:
-        r["health_facilities"] = int(hcounts.get(r["kec_idx"], 0))
+        schools = [0] * len(boundaries)
+    if HEALTH_GEOJSON.exists():
+        health = _count_facilities(boundaries, HEALTH_GEOJSON)
+    else:
+        health = [0] * len(boundaries)
+    for i in range(len(boundaries)):
+        rows.append({"tship_idx": i, "schools": schools[i], "health_facilities": health[i]})
     return pd.DataFrame(rows)
 
 
 def wb_rainfall_indicators(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
-    """Aggregate World Bank / GFDRR flood-relevant rainfall indices to kecamatan."""
+    """Aggregate World Bank / GFDRR flood-relevant rainfall indices to township
+    via its district (ADM2)."""
     df = pd.read_csv(WB_RAINFALL)
     df["date"] = pd.to_datetime(df["date"])
-    # Build PCODE -> kota name map from the WorldPop ADM2 table.
-    adm = pd.read_csv(ADMPOP, usecols=["ADM2_EN", "ADM2_PCODE"])
-    pcode_name = adm.drop_duplicates("ADM2_PCODE").set_index("ADM2_PCODE")["ADM2_EN"].to_dict()
+    adm2 = df[(df["adm_level"] == 2) & (df["PCODE"].astype(str).str.startswith(YANGON_ADM1))].copy()
 
-    adm2 = df[(df["adm_level"] == 2) & (df["PCODE"].astype(str).str.startswith("ID31"))].copy()
-    adm2["kota_raw"] = adm2["PCODE"].astype(str).map(pcode_name)
-    adm2["kota"] = adm2["kota_raw"].str.replace("Kota Administrasi ", "", regex=False).str.replace("Kota ", "", regex=False).str.title()
-
-    agg = adm2.groupby("kota").agg(
+    agg = adm2.groupby("PCODE").agg(
         rfh_mean=("rfh", "mean"),
         r1h_mean=("r1h", "mean"),
         r3h_mean=("r3h", "mean"),
         rfh_p95=("rfh", lambda s: np.nanpercentile(s, 95)),
         n_obs=("rfh", "size"),
     ).reset_index()
-    out = pd.DataFrame({"kec_idx": range(len(boundaries))})
-    out["kota"] = boundaries["kota"].values
-    out = out.merge(agg, on="kota", how="left")
-    out = out.drop(columns=["kota"])
+
+    out = pd.DataFrame({"tship_idx": range(len(boundaries))})
+    out["district_code"] = boundaries["district_code"].values
+    out = out.merge(agg, left_on="district_code", right_on="PCODE", how="left")
+    out = out.drop(columns=["district_code", "PCODE"])
     return out
 
 
 def age_shares(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
-    """Child (<15) and elderly (65+) population shares per kota from WorldPop ADM2."""
+    """Child (<15) and elderly (65+) population shares per district from WorldPop ADM2."""
     adm = pd.read_csv(ADMPOP)
-    adm = adm[adm["ADM1_EN"].str.contains("Jakarta", case=False, na=False)]
-    adm["kota"] = adm["ADM2_EN"].str.replace("Kota Administrasi ", "", regex=False).str.replace("Kota ", "", regex=False).str.title()
+    adm = adm[adm["ADM1_NAME"].astype(str).str.contains("Yangon", case=False, na=False)].copy()
+    adm["district_code"] = adm["ADM2_PCODE"].astype(str).str.strip()
     child_cols = ["T_00_04", "T_05_09", "T_10_14"]
-    elder_cols = ["T_65_69", "T_70_74", "T_75Plus"]
-    agg2 = adm.groupby("kota").agg(
+    elder_cols = ["T_65_69", "T_70_74", "T_75_79", "T_80_84", "T_85_89", "T_90Plus"]
+    agg2 = adm.groupby("district_code").agg(
         **{f"sum_{c}": (c, "sum") for c in child_cols + elder_cols + ["T_TL"]}
     ).reset_index()
     agg2["child_share"] = agg2[[f"sum_{c}" for c in child_cols]].sum(axis=1) / agg2["sum_T_TL"]
     agg2["elderly_share"] = agg2[[f"sum_{c}" for c in elder_cols]].sum(axis=1) / agg2["sum_T_TL"]
-    out = pd.DataFrame({"kec_idx": range(len(boundaries))})
-    out["kota"] = boundaries["kota"].values
-    out = out.merge(agg2[["kota", "child_share", "elderly_share"]], on="kota", how="left")
-    out = out.drop(columns=["kota"])
+
+    out = pd.DataFrame({"tship_idx": range(len(boundaries))})
+    out["district_code"] = boundaries["district_code"].values
+    out = out.merge(agg2[["district_code", "child_share", "elderly_share"]], on="district_code", how="left")
+    out = out.drop(columns=["district_code"])
     return out
 
 
@@ -292,9 +320,9 @@ def main() -> None:
     qc: list[QCResult] = []
 
     boundaries = load_boundaries()
-    print(f"boundaries: {len(boundaries)} kecamatan")
+    print(f"boundaries: {len(boundaries)} townships")
 
-    qc.append(run_qc(boundaries.drop(columns="geometry").assign(geometry_len=[len(g.wkt) for g in boundaries.geometry]), "boundaries_kecamatan"))
+    qc.append(run_qc(boundaries.drop(columns="geometry").assign(geometry_len=[len(g.wkt) for g in boundaries.geometry]), "boundaries_township"))
 
     # 2. CHIRPS series
     series = chirps_zonal_series(boundaries)
@@ -322,7 +350,7 @@ def main() -> None:
 
     # Merge
     out = boundaries.drop(columns="geometry").reset_index(drop=True)
-    for df, prefix in [
+    for df, _prefix in [
         (clim, ""),
         (dem, ""),
         (pop, ""),
@@ -331,15 +359,15 @@ def main() -> None:
         (age, ""),
     ]:
         df = df.reset_index(drop=True)
-        out = pd.concat([out, df.drop(columns=["kec_idx"], errors="ignore")], axis=1)
+        out = pd.concat([out, df.drop(columns=["tship_idx"], errors="ignore")], axis=1)
 
     # Derived: population density (persons / km^2)
-    area_km2 = boundaries.geometry.to_crs("EPSG:32748").area / 1e6
+    area_km2 = boundaries.geometry.to_crs(CRS_UTM).area / 1e6
     out["area_km2"] = area_km2.values
     out["pop_density"] = out["pop_est"] / out["area_km2"]
 
-    out.to_parquet(DATA_PROCESSED / "jakarta_kecamatan_features.parquet")
-    out.to_csv(DATA_PROCESSED / "jakarta_kecamatan_features.csv", index=False)
+    out.to_parquet(DATA_PROCESSED / "yangon_township_features.parquet")
+    out.to_csv(DATA_PROCESSED / "yangon_township_features.csv", index=False)
     print("merged dataset written", out.shape)
 
     write_qc_report(qc)

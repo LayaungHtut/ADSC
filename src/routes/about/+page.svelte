@@ -6,7 +6,7 @@
 		},
 		{
 			title: 'Honest limitations',
-			body: 'Coarse rainfall resolution, kota-level vulnerability, and missing flood-extent polygons are disclosed on every relevant page.'
+			body: 'Coarse rainfall resolution, district-level vulnerability, and missing flood-extent polygons are disclosed on every relevant page.'
 		},
 		{
 			title: 'Decision support, not forecasting',
@@ -16,23 +16,23 @@
 
 	const roadmap = [
 		['Now', 'Prioritize the top risk class for early-warning and drainage maintenance'],
-		['Next', 'Blend flood-extent data (Global Flood Database) and land-subsidence measurements'],
-		['Next', 'Integrate sub-district socioeconomic and poverty statistics as they open up'],
+		['Next', 'Blend flood-extent data (Global Flood Database) and extend the CHIRPS record'],
+		['Next', 'Integrate township-level socioeconomic and poverty statistics as they open up'],
 		['Later', 'Extend the same framework to other ASEAN cities (Manila, Bangkok, HCMC)']
 	];
 </script>
 
 <svelte:head>
-	<title>About — FloodResilience Jakarta</title>
+	<title>About — FloodResilience Yangon</title>
 </svelte:head>
 
 <section class="mb-8 max-w-3xl">
 	<h1 class="text-3xl font-bold tracking-tight">About the project</h1>
 	<p class="mt-2 text-slate-600">
 		FloodResilience ASEAN is a student data-science project for the ASEAN Data Science Explorers
-		2026 competition. We chose Jakarta, Indonesia — a megacity where monsoon floods, low-lying
-		terrain and dense population combine into a recurring crisis — and built a reproducible
-		framework to measure flood risk at the sub-district level.
+		2026 competition. We chose Yangon, Myanmar — a low-lying delta city where monsoon rains, river
+		overflow and a dense coastal population combine into a recurring crisis — and built a
+		reproducible framework to measure flood risk at the township level.
 	</p>
 </section>
 
@@ -49,14 +49,15 @@
 </section>
 
 <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-	<h2 class="mb-3 text-lg font-semibold">Why Jakarta?</h2>
+	<h2 class="mb-3 text-lg font-semibold">Why Yangon?</h2>
 	<p class="text-sm leading-relaxed text-slate-600">
-		Jakarta is one of the most flood-exposed megacities in ASEAN: parts of northern Jakarta sit
-		below sea level, half the city is sinking, and the wet season (November-March) produces chronic
-		flooding that disrupts 10+ million residents and critical services. Because data for Jakarta are
-		comparatively open, it is an ideal case to prototype a risk framework that can be scaled across
-		the region. Documented major flood years in our rainfall record — 2002, 2007, 2013, 2020 and
-		2025 — confirm the hazard signal is real.
+		Yangon Region is one of Myanmar's most flood-exposed areas: the low-lying southern townships
+		along the Yangon and Bago rivers and the delta coast flood during the south-west monsoon
+		(May-October), and the city hosts millions of residents whose daily services are disrupted by
+		recurrent inundation. Because the region's open datasets (CHIRPS, Copernicus DEM, Kontur,
+		WorldPop, HDX, DFO) are publicly traceable, it is an ideal case to prototype a risk framework
+		that can be scaled across the region. Documented major flood years in our rainfall record —
+		1988, 1997, 2002, 2007, 2013, 2014 and 2020 — confirm the hazard signal is real.
 	</p>
 </section>
 

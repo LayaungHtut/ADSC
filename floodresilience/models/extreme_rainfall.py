@@ -1,16 +1,16 @@
-"""ML experiment: classify extreme-rainfall months at the Jakarta study-area scale.
+"""ML experiment: classify extreme-rainfall months at the Yangon study-area scale.
 
 Research question (defensible with the available data):
     Can historical rainfall conditions identify months that fall at or above the
     long-term 95th percentile of monthly rainfall — the strongest single
-    environmental precursor of pluvial flooding in Jakarta?
+    environmental precursor of pluvial flooding in Yangon?
 
 Scope and honesty constraints (per the project master prompt):
   - We do NOT claim district-level flood prediction: there is no reliable
-    per-kecamatan flood-occurrence label in the open data we use, so a
-    kecamatan-level flood classifier is NOT attempted.
+    per-township flood-occurrence label in the open data we use, so a
+    township-level flood classifier is NOT attempted.
   - The target is the monthly extreme-rainfall flag derived from CHIRPS at the
-    Jakarta bbox scale (the same series used in the hazard index).
+    Yangon bbox scale (the same series used in the hazard index).
   - Strict temporal split (train <= 2005, test > 2005) — no random shuffle,
     no target leakage (features are lagged values strictly in the past).
   - Compared against a simple majority-class baseline.
@@ -39,13 +39,13 @@ from sklearn.metrics import (
 
 from floodresilience.config import DATA_INTERMEDIATE, MODELS_DIR, OUTPUT_REPORTS, OUTPUT_TABLES
 
-CHIRPS_DIR = DATA_INTERMEDIATE / "rainfall" / "chirps"
+CHIRPS_DIR = DATA_INTERMEDIATE / "rainfall" / "chirps_yangon"
 TRAIN_SPLIT_YEAR = 2005
 EXTREME_PCT = 95.0
 
 
 def load_bbox_monthly() -> pd.DataFrame:
-    """Mean monthly rainfall across the Jakarta bbox from CHIRPS tiles."""
+    """Mean monthly rainfall across the Yangon bbox from CHIRPS tiles."""
     rows = []
     for f in sorted(glob.glob(str(CHIRPS_DIR / "chirps_*.tif"))):
         import rasterio
@@ -96,7 +96,7 @@ def main() -> None:
     train_rows = int(X_train.shape[0])
     test_rows = int(X_test.shape[0])
     results = {
-        "question": "Can lagged rainfall conditions classify extreme-rainfall months (>= p95) at the Jakarta bbox scale?",
+        "question": "Can lagged rainfall conditions classify extreme-rainfall months (>= p95) at the Yangon bbox scale?",
         "threshold_mm": round(threshold, 1),
         "train_period": f"<= {TRAIN_SPLIT_YEAR}",
         "test_period": f"> {TRAIN_SPLIT_YEAR}",
@@ -172,7 +172,7 @@ def permutation_importance_simple(clf, X, y, n_repeats: int = 20, seed: int = 42
 
 def write_report(results: dict) -> None:
     lines = [
-        "# Model Evaluation — FloodResilience ASEAN (Jakarta)",
+        "# Model Evaluation — FloodResilience ASEAN (Yangon)",
         "",
         "## 1. Research question",
         "",
@@ -180,14 +180,14 @@ def write_report(results: dict) -> None:
         "",
         "## 2. Scope honesty",
         "",
-        "- A kecamatan-level flood classifier is **not** attempted: there is no reliable per-district flood-occurrence label in the open data used.",
-        "- The target is the monthly extreme-rainfall flag (>= p95 of the training-period distribution) at the Jakarta bbox scale — the environmental precursor that drives the hazard component.",
+        "- A township-level flood classifier is **not** attempted: there is no reliable per-district flood-occurrence label in the open data used.",
+        "- The target is the monthly extreme-rainfall flag (>= p95 of the training-period distribution) at the Yangon bbox scale — the environmental precursor that drives the hazard component.",
         "- Strict temporal split (train <= 2005, test > 2005). Features are lagged values strictly in the past; no random shuffle, no target leakage.",
         "- Compared against a simple majority-class baseline. Classes are imbalanced; accuracy is therefore not reported as a headline metric.",
         "",
         "## 3. Data",
         "",
-        f"- Source: CHIRPS v2.0 monthly, Jakarta bbox mean ({results['train_rows'] + results['test_rows']} months total).",
+        f"- Source: CHIRPS v2.0 monthly, Yangon bbox mean ({results['train_rows'] + results['test_rows']} months total).",
         f"- Extreme threshold: {results['threshold_mm']:.1f} mm/month (95th percentile of the training period).",
         f"- Training rows: {results['train_rows']} (<= {results['train_period'].split()[-1]}), positive rate {results['positive_rate_train']:.1%}.",
         f"- Test rows: {results['test_rows']} (> {results['test_period'].split()[-1]}), positive rate {results['positive_rate_test']:.1%}.",
@@ -228,7 +228,7 @@ def write_report(results: dict) -> None:
         "",
         "## 7. Limitations",
         "",
-        "- Small sample (a few hundred months), single site (Jakarta bbox).",
+        "- Small sample (a few hundred months), single site (Yangon bbox).",
         "- Extreme-rainfall months are a proxy for pluvial flood *conditions*, not observed flood extents.",
         "- The CHIRPS bbox mean smooths local heterogeneity.",
         "- No climate-model projections; the model is descriptive, not a forecast.",

@@ -1,21 +1,23 @@
 <script lang="ts">
-	import { riskSummary } from '$lib/data';
+	import { rainfall, riskSummary, rainfallRange } from '$lib/data';
+
+	const rainSpan = rainfallRange();
 
 	const sources = [
 		{
 			name: 'CHIRPS v2.0 (UCSB/Climate Hazards Center)',
-			use: 'Monthly rainfall 1981-2026',
-			note: '~5.5 km gridded, satellite + station blend; clipped to Jakarta study box'
+			use: `Monthly rainfall ${rainSpan.start}-${rainSpan.end}`,
+			note: '~5.5 km gridded, satellite + station blend; clipped to Yangon study box'
 		},
 		{
 			name: 'Copernicus DEM 30m',
 			use: 'Elevation and slope',
-			note: 'Tiles S06/S07 × E106/E107 via NASA Earthdata'
+			note: 'Tiles lat 14-18 N × lon 93-97 E via AWS/NASA Earthdata'
 		},
 		{
 			name: 'Kontur population grid',
 			use: 'Population & density',
-			note: 'H3 hexagons, Nov 2023; area-weighted to kecamatan'
+			note: 'H3 hexagons, Nov 2023; area-weighted to townships'
 		},
 		{
 			name: 'WorldPop ADM2 (UN adjusted)',
@@ -25,22 +27,22 @@
 		{
 			name: 'HDX / OSM facility data',
 			use: 'Schools & health facilities',
-			note: 'Point counts per kecamatan'
+			note: 'Point counts per township'
 		},
 		{
 			name: 'World Bank / GFDRR rainfall indicators',
 			use: 'Recent rainfall-flood index',
-			note: '10-day scale, 2022+, kota level'
+			note: '10-day scale, 2022+, district level'
 		},
 		{
 			name: 'Dartmouth Flood Observatory (DFO)',
 			use: 'Historical flood events',
-			note: '244 Indonesia events used as context'
+			note: '33 Myanmar events used as context'
 		},
 		{
-			name: 'GeoBoundaries / Alf-Anas admin boundaries',
-			use: 'Kecamatan boundaries',
-			note: 'Official codes from Indonesian statistics'
+			name: 'GeoBoundaries admin boundaries',
+			use: 'Township boundaries',
+			note: 'Official Myanmar ADM3 codes (45 Yangon townships)'
 		}
 	];
 
@@ -51,7 +53,7 @@
 </script>
 
 <svelte:head>
-	<title>Data — FloodResilience Jakarta</title>
+	<title>Data — FloodResilience Yangon</title>
 </svelte:head>
 
 <section class="mb-8">
@@ -64,14 +66,14 @@
 
 <section class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
 	<div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-		<p class="text-sm text-slate-500">Kecamatan</p>
+		<p class="text-sm text-slate-500">Townships</p>
 		<p class="mt-1 text-2xl font-bold">{riskSummary.length}</p>
-		<p class="text-xs text-slate-400">42 urban areas (2 offshore excluded)</p>
+		<p class="text-xs text-slate-400">45 townships of Yangon Region</p>
 	</div>
 	<div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 		<p class="text-sm text-slate-500">Rainfall months</p>
-		<p class="mt-1 text-2xl font-bold">547</p>
-		<p class="text-xs text-slate-400">CHIRPS, 1981-2026</p>
+		<p class="mt-1 text-2xl font-bold">{rainfall.length}</p>
+		<p class="text-xs text-slate-400">CHIRPS, {rainSpan.start}-{rainSpan.end}</p>
 	</div>
 	<div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 		<p class="text-sm text-slate-500">Schools</p>
@@ -114,9 +116,9 @@
 <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 	<h2 class="mb-3 text-lg font-semibold">Quality control</h2>
 	<p class="text-sm text-slate-600">
-		The processed kecamatan dataset (42 rows × 27 columns) contains zero missing values. A full
+		The processed township dataset (45 rows × 28 columns) contains zero missing values. A full
 		data-quality report covering range checks, completeness and spatial coverage is generated with
-		the pipeline. WorldPop age shares and the World Bank rainfall indices are kota-level and
+		the pipeline. WorldPop age shares and the World Bank rainfall indices are district-level and
 		documented as such in every report and on this dashboard.
 	</p>
 </section>
