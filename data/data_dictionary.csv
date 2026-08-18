@@ -1,0 +1,28 @@
+column_name,dataset,type,unit,description,source,transformation,missing_percentage,limitations
+kec_code,jakarta_kecamatan_features,string,-,Official Indonesian kecamatan (district) code,GeoBoundaries / Alf-Anas admin boundaries,"stripped, string-cast",0.00,Official BPS codes; Kepulauan Seribu excluded (2 offshore kecamatan)
+kecamatan,jakarta_kecamatan_features,string,-,Kecamatan name (title case),GeoBoundaries / Alf-Anas admin boundaries,title-cased,0.00,-
+kota,jakarta_kecamatan_features,string,-,Kota administrasi (municipal area) of DKI Jakarta,GeoBoundaries / Alf-Anas admin boundaries,"'Kota Administrasi ' prefix removed, title-cased",0.00,Kepulauan Seribu removed
+rain_annual_mean_mm,jakarta_kecamatan_features,float,mm/year,Mean annual rainfall from the complete-years CHIRPS series,"CHIRPS v2.0 monthly (UCSB Climate Hazards Center), 1981-2026","zonal mean per kecamatan, complete years only (12 months present)",0.00,~5.5 km grid; bbox-level zonal aggregation
+rain_annual_last5_mean_mm,jakarta_kecamatan_features,float,mm/year,Mean annual rainfall over the last 5 complete years,CHIRPS v2.0 monthly,mean of last 5 annual totals,0.00,Only if >=5 complete years available
+rain_wet_season_share,jakarta_kecamatan_features,float,fraction 0-1,Share of mean annual rainfall falling in wet-season months (Dec-Mar),CHIRPS v2.0 monthly,sum(wet-season monthly means) / sum(all monthly means),0.00,"Wet-season window (12,1,2,3) is a simplification of the monsoon pattern"
+rain_extreme_months,jakarta_kecamatan_features,int,count,Number of months with rainfall >= 95th percentile of the kecamatan series,CHIRPS v2.0 monthly,count of months >= p95,0.00,"Threshold is series-specific (relative, not absolute)"
+rain_annual_trend_mm_yr,jakarta_kecamatan_features,float,mm/year,OLS slope of annual rainfall over time,CHIRPS v2.0 monthly,np.polyfit degree-1 on complete annual totals,0.00,Descriptive only; no significance test; endpoint sensitive
+rain_annual_trend_pct_yr,jakarta_kecamatan_features,float,%/year,OLS slope normalized by the annual mean,CHIRPS v2.0 monthly,slope / annual_mean * 100,0.00,Same as trend slope
+rain_p95_monthly_mm,jakarta_kecamatan_features,float,mm/month,95th percentile of monthly rainfall,CHIRPS v2.0 monthly,"nanpercentile(s, 95)",0.00,-
+rain_total_months,jakarta_kecamatan_features,int,count,Number of months with valid rainfall in the series,CHIRPS v2.0 monthly,count of non-null months,0.00,-
+elev_mean_m,jakarta_kecamatan_features,float,m,Mean elevation within the kecamatan,Copernicus DEM GLO-30 (30 m DSM),zonal mean over mosaicked DEM tiles,0.00,DSM includes vegetation/buildings; coastal sea gaps read ~0
+elev_min_m,jakarta_kecamatan_features,float,m,Minimum elevation within the kecamatan,Copernicus DEM GLO-30,zonal min,0.00,Values below 0 indicate below-sea-level terrain
+elev_max_m,jakarta_kecamatan_features,float,m,Maximum elevation within the kecamatan,Copernicus DEM GLO-30,zonal max,0.00,-
+slope_mean_pct,jakarta_kecamatan_features,float,%,Mean terrain slope in percent,Copernicus DEM GLO-30 (derived),"gradient-based slope from DEM, zonal mean",0.00,Percent slope; computed from DSM
+pop_est,jakarta_kecamatan_features,float,persons,Modelled resident population (area-weighted),"Kontur population grid (H3, Nov 2023)",area-weighted intersection of H3 hexagons with kecamatan polygon,0.00,"Model estimate, not census"
+schools,jakarta_kecamatan_features,int,facilities,Count of school facilities inside the kecamatan,HDX / OSM school facilities (IDN_school_facilities),point-in-polygon count,0.00,OSM-derived; may undercount private/informal schools
+health_facilities,jakarta_kecamatan_features,int,facilities,Count of health facilities inside the kecamatan,HDX / HOTOSM health facilities,point-in-polygon count,0.00,OSM-derived; may undercount
+rfh_mean,jakarta_kecamatan_features,float,index,"Mean rainfall-flood hazard index (recent, 2022+)",World Bank / GFDRR subnational rainfall indicators (ADM2),"grouped by kota, mean over time",0.00,Kota-level only (all kecamatan in a kota share the value)
+r1h_mean,jakarta_kecamatan_features,float,index,"Mean 1-hour rainfall index (recent, 2022+)",World Bank / GFDRR subnational rainfall indicators,"grouped by kota, mean over time",0.00,Kota-level only
+r3h_mean,jakarta_kecamatan_features,float,index,"Mean 3-hour rainfall index (recent, 2022+)",World Bank / GFDRR subnational rainfall indicators,"grouped by kota, mean over time",0.00,Kota-level only
+rfh_p95,jakarta_kecamatan_features,float,index,95th percentile of the rainfall-flood hazard index,World Bank / GFDRR subnational rainfall indicators,nanpercentile 95 per kota,0.00,Kota-level only
+n_obs,jakarta_kecamatan_features,int,count,Number of observations contributing to kota rainfall indices,World Bank / GFDRR subnational rainfall indicators,count,0.00,-
+child_share,jakarta_kecamatan_features,float,fraction 0-1,Share of population aged 0-14,"WorldPop ADM2 (UN-adjusted, 2020)","sum(T_00_04, T_05_09, T_10_14) / T_TL per kota",0.00,Kota-level only; census-based aggregation
+elderly_share,jakarta_kecamatan_features,float,fraction 0-1,Share of population aged 65+,"WorldPop ADM2 (UN-adjusted, 2020)","sum(T_65_69, T_70_74, T_75Plus) / T_TL per kota",0.00,Kota-level only
+area_km2,jakarta_kecamatan_features,float,km²,Kecamatan area,Admin boundaries (geometry),area in EPSG:32748 / 1e6,0.00,-
+pop_density,jakarta_kecamatan_features,float,persons/km²,Population density,Kontur population grid + geometry,pop_est / area_km2,0.00,Derived from modelled population

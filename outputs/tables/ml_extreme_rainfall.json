@@ -1,0 +1,73 @@
+{
+  "question": "Can lagged rainfall conditions classify extreme-rainfall months (>= p95) at the Jakarta bbox scale?",
+  "threshold_mm": 399.3,
+  "train_period": "<= 2005",
+  "test_period": "> 2005",
+  "train_rows": 288,
+  "test_rows": 247,
+  "positive_rate_train": 0.0486,
+  "positive_rate_test": 0.0648,
+  "models": {
+    "baseline_majority": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "roc_auc": 0.5,
+      "pr_auc": 0.4676,
+      "confusion_matrix": [
+        [
+          231,
+          0
+        ],
+        [
+          16,
+          0
+        ]
+      ]
+    },
+    "logistic_regression": {
+      "precision": 0.2075,
+      "recall": 0.6875,
+      "f1": 0.3188,
+      "roc_auc": 0.8699,
+      "pr_auc": 0.2138,
+      "confusion_matrix": [
+        [
+          189,
+          42
+        ],
+        [
+          5,
+          11
+        ]
+      ]
+    },
+    "random_forest": {
+      "precision": 0.3182,
+      "recall": 0.4375,
+      "f1": 0.3684,
+      "roc_auc": 0.892,
+      "pr_auc": 0.2618,
+      "confusion_matrix": [
+        [
+          216,
+          15
+        ],
+        [
+          9,
+          7
+        ]
+      ]
+    }
+  },
+  "permutation_importance": {
+    "month": 0.072,
+    "rain_lag1": 0.0072,
+    "rain_lag2": 0.0172,
+    "rain_lag3": 0.0003,
+    "rain_lag6": -0.0043,
+    "rain_lag12": 0.0924,
+    "roll3_prev": 0.011,
+    "roll6_prev": 0.014
+  }
+}
