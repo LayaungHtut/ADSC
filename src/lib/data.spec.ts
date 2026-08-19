@@ -28,7 +28,7 @@ describe('scenario engine (mirrors documented risk model)', () => {
 		expect(topRisk.map((r) => r.tship_code)).toContain(top.tship_code);
 	});
 
-	it('wetter + denser scenario re-ranks risk in both directions', () => {
+	it('wetter + denser scenario raises risk for most townships', () => {
 		const base = runScenario({ rainfall: 0, population: 0, infrastructure: 0 });
 		const wet = runScenario({ rainfall: 0.2, population: 0.2, infrastructure: 0 });
 		let rising = 0;
@@ -37,8 +37,10 @@ describe('scenario engine (mirrors documented risk model)', () => {
 			if (wet[i].scenario_risk > base[i].baseline_risk) rising++;
 			else if (wet[i].scenario_risk < base[i].baseline_risk) falling++;
 		}
-		expect(rising).toBeGreaterThan(0);
-		expect(falling).toBeGreaterThan(0);
+		// A uniform region-wide shock raises hazard and exposure everywhere, so
+		// virtually all townships should see higher risk and none should fall.
+		expect(rising).toBeGreaterThan(30);
+		expect(falling).toBe(0);
 	});
 
 	it('infrastructure resilience lowers exposure for areas with facilities', () => {

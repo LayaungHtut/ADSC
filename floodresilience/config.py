@@ -85,6 +85,16 @@ GEOBOUNDARIES_ADM1 = "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/rele
 GEOBOUNDARIES_ADM3 = "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/MMR/ADM3/geoBoundaries-MMR-ADM3_simplified.geojson"
 HDX_API = "https://data.humdata.org/api/3/action/package_show?id="
 
+# 2014 Myanmar Population & Housing Census, township level (DoP / MIMU).
+# Open Development Myanmar, dataset "2014 Myanmar Census: Household and
+# Population Data for Townships". Source: Department of Population, Ministry of
+# Labour, Immigration and Population, Myanmar.
+CENSUS_TOWNSHIP_URL = (
+    "https://data.opendevelopmentmekong.net/dataset/be760472-6224-4d73-b309-"
+    "335d732cab93/resource/702f8d11-8301-4661-b7b8-030501a90626/download/"
+    "householdpopulationbaseddatasetmimutownshipsabbreviated.csv"
+)
+
 # Documented major Yangon flood years (from published records, within the
 # CHIRPS 1981+ record). Sources:
 #   - PIAHS 386 (2024) RRI flood study: severe Yangon floods 1988, 1991, 1997,

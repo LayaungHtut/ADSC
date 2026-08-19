@@ -182,7 +182,7 @@
 			Rainfall change scales the CHIRPS annual-mean, 95th-percentile and World Bank rainfall-flood
 			indicators.
 		</li>
-		<li>Population change scales Kontur population and recomputes density from area.</li>
+		<li>Population change scales the 2014 Census population and recomputes density from area.</li>
 		<li>Infrastructure resilience reduces the school and health-facility exposure terms.</li>
 		<li>Risk = 0.40 · Hazard + 0.35 · Exposure + 0.25 · Vulnerability, then quintile classes.</li>
 	</ul>

@@ -44,10 +44,10 @@ VERIFIED DATA → Python pipeline → risk model → SAC storyboard + SvelteKit 
 | Finding | Value | Source |
 |---|---|---|
 | Townships assessed | 45 townships of Yangon Region | `data/processed/` |
-| Modelled population | ~8.32 M (45 townships) | Kontur H3, area-weighted |
-| Population in highest risk class | ~31.3% (class 5) | risk scores + population |
-| Rainfall months analysed | 245 (1981-2001) | CHIRPS v2.0 |
-| Top-ranked township | Thongwa (56.8 / 100) | default weights |
+| Census population | 7.36 M (45 townships) | 2014 Myanmar Census (DoP / MIMU) |
+| Population in highest risk class | ~35.3% (class 5) | risk scores + census population |
+| Rainfall months analysed | 547 (1981-2026) | CHIRPS v2.0 |
+| Top-ranked township | Kayan (58.3 / 100) | default weights |
 | Elevation range | -9.2 m … 487.5 m (township min/max) | Copernicus DEM 30 m |
 | Facilities | 1,320 schools, 1,178 health facilities | HDX/OSM (Myanmar) |
 | Documented flood years | 1988, 1991, 1997, 2002, 2004, 2007, 2008, 2010, 2013, 2014, 2015, 2017, 2019, 2020 | PIAHS 386, Sritarapipat 2017, OCHA, UNOSAT |
@@ -87,7 +87,7 @@ tests/            Python + SvelteKit tests
 |---|---|---|
 | Rainfall | CHIRPS v2.0 (UCSB Climate Hazards Center) | free/public |
 | Elevation | Copernicus DEM GLO-30 | free & open |
-| Population | Kontur H3 (2023); WorldPop ADM2 age shares | CC-BY-like |
+| Population | 2014 Myanmar Census township totals (age structure, urban/rural) | public / official |
 | Facilities | HDX / OSM school & health points | ODbL/HDX |
 | Rainfall-flood index | World Bank / GFDRR subnational | open |
 | Flood events | Dartmouth Flood Observatory | free academic |
@@ -165,10 +165,10 @@ open data. Full evaluation: `outputs/reports/model_evaluation.md`.
 
 ## 12. Limitations (summary)
 
-- Vulnerability is district-level, not township-level.
+- Vulnerability age shares are township-level from the 2014 Census; the World Bank rainfall-flood index is district-level.
 - CHIRPS rainfall is ~5.5 km — coarse for intra-township differences.
 - No township-level poverty/socioeconomic open data for Yangon.
-- Modelled population (Kontur/WorldPop) is an estimate, not a census.
+- Census population is 2014 vintage; population may have grown since.
 - OSM facility counts may undercount informal facilities.
 - Correlations are reported as associations, never causation.
 

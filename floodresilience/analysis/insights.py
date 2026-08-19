@@ -177,9 +177,11 @@ def build_insights() -> list[dict]:
     dfo_my = dfo[dfo["Country"].astype(str).str.contains("Myanmar", case=False, na=False)]
     dfo_my["Start Date"] = pd.to_datetime(dfo_my["Start Date"], errors="coerce")
     dfo_my = dfo_my.dropna(subset=["Start Date"])
+    y0 = int(dfo_my["Start Date"].dt.year.min())
+    y1 = int(dfo_my["Start Date"].dt.year.max())
     out.append({
         "insight": "National flood-events context (DFO)",
-        "metric": "events (1985-2023)",
+        "metric": f"events ({y0}-{y1})",
         "value": str(len(dfo_my)),
         "comparison": "DFO-documented flood events in Myanmar",
         "source": "Dartmouth Flood Observatory Global Flood Records",

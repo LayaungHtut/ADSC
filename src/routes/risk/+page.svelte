@@ -145,7 +145,7 @@
 		<div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 			<p class="text-sm text-slate-500">Population</p>
 			<p class="mt-1 text-2xl font-bold">{formatInt(selectedRow.pop_est)}</p>
-			<p class="text-xs text-slate-400">modelled (Kontur 2023)</p>
+			<p class="text-xs text-slate-400">2014 Census (official)</p>
 		</div>
 		<div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 			<p class="text-sm text-slate-500">Mean elevation</p>

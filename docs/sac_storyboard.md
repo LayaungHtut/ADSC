@@ -8,6 +8,13 @@ charts).
 Status: **design plan**. Charts are not yet created in SAC — this document
 specifies what to build once the SAC account is available.
 
+Build workflow follows the official **SAC Training Manual 2024**
+(`D:/SAC/SAC Training Manual 2024.pdf`): Modeler → import CSV from `data/sac/`
+→ fix measure/dimension classification → save model under
+`Public > Myanmar > [Team folder]` → Stories > Responsive + **Classic Design
+Experience** → insert tiles, input controls, styling. Detailed steps in
+`docs/sac_import_guide.md`; chart specs in `docs/sac_visualizations.md`.
+
 References to datasets are the real SAC-ready files in `data/sac/`. Every
 number cited is from the actual processed data (see
 `outputs/reports/key_insights.md`).
@@ -39,7 +46,7 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 - **Objective**: why urban flooding is a serious ASEAN problem now.
 - **Headline**: Urban floods threaten lives, services and economies across ASEAN.
 - **Evidence**: regional flood-event counts from `sac_flood_events.csv`
-  (Dartmouth Flood Observatory, 33 Myanmar events 1985-2023); Yangon's
+  (Dartmouth Flood Observatory, 33 Myanmar events 1990-2023); Yangon's
   documented major flood years (1988, 1991, 1997, 2002, 2004, 2007, 2008,
   2010, 2013, 2014, 2015, 2017, 2019, 2020) as context flags.
 - **Charts**: line/column of `n_flood_events_myanmar` by year (SAC).
@@ -77,8 +84,9 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 - **Objective**: demonstrate credible, sourced, open data.
 - **Headline**: All inputs are public, traceable data.
 - **Evidence**: source families — CHIRPS rainfall (1981-present), Copernicus DEM
-  30 m, Kontur population, WorldPop age structure, HDX/OSM facilities, World
-  Bank/GFDRR rainfall indices, DFO flood archive, official boundaries.
+  30 m, 2014 Myanmar Census (population, age structure, urban/rural, official
+  MIMU P-codes), HDX/OSM facilities, World Bank/GFDRR rainfall indices, DFO
+  flood archive, official boundaries.
 - **Charts**: optional simple count visuals (e.g., number of rainfall months =
   547, townships = 45) as SAC tables/numbers.
 - **Source**: `data/source_catalog.csv`; full list on References page.
@@ -127,7 +135,7 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
   facilities are spread city-wide.
 - **Evidence**: `sac_population_exposure.csv`, `sac_infrastructure_exposure.csv`;
   1,320 schools, 1,178 health facilities across 45 townships; top risk class
-  population 2,604,699 (31.3% of Yangon).
+  population 2,599,370 (35.3% of the 2014 Census total).
 - **Charts**:
   - Geo bubble map: `pop_est` by township (SAC geo).
   - Stacked column: `schools` + `health_facilities` by `district`.
@@ -138,7 +146,7 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 
 - **Objective**: show the composite ranking and its decomposition.
 - **Headline**: A transparent, weighted, sensitivity-tested risk index.
-- **Evidence**: `sac_risk_by_area.csv`; top-ranked township Thongwa (56.8 / 100)
+- **Evidence**: `sac_risk_by_area.csv`; top-ranked township Kayan (58.3 / 100)
   under default weights.
 - **Charts**:
   - Bar: top-10 townships by `risk_100` (SAC).
@@ -154,7 +162,10 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
   exposure concentration, flood-year wetness, facility spread, recent rainfall
   intensity, national flood context).
 - **Evidence**: `outputs/reports/key_insights.md`.
-- **Charts**: supporting SAC charts from Pages 7-10 (reused) or summary KPIs.
+- **Charts**: supporting SAC charts from Pages 7-10 (reused) or summary KPIs;
+  optional **Smart Discovery** "Key Influencers" tile (target `risk_score`,
+  entity `township`) backing the driver insights — labeled as association, not
+  causation.
 - **Key takeaway**: each insight carries a metric, source, interpretation and
   limitation.
 
@@ -202,8 +213,9 @@ PROBLEM → EVIDENCE → PATTERN → INSIGHT → WHO IS AFFECTED → WHY IT MATT
 
 - Every dataset and external source with URLs (from `data/source_catalog.csv`
   and `research/sources.md`).
-- Include: CHIRPS (Funk et al. 2015), Copernicus DEM, Kontur, WorldPop, HDX,
-  World Bank/GFDRR, DFO, geoBoundaries/Alf-Anas, aseandse.org rules.
+- Include: CHIRPS (Funk et al. 2015), Copernicus DEM, 2014 Myanmar Census
+  (DoP / MIMU), HDX/OSM, World Bank/GFDRR, DFO, geoBoundaries/Alf-Anas,
+  aseandse.org rules.
 
 ---
 

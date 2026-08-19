@@ -16,14 +16,14 @@
 Risk = f(Hazard, Exposure, Vulnerability), decomposed into explainable sub-indicators:
 
 - **Hazard (H):** rainfall intensity/extremes (GPM IMERG), historical flood frequency/extent (GFD + DFO), elevation/slope/low-lying proximity to water (Copernicus DEM + JRC water).
-- **Exposure (E):** population count/density (WorldPop/GHSL), critical infrastructure (OSM: hospitals, schools, shelters, roads), built-up area (GHSL/WorldCover).
+- **Exposure (E):** population count/density (2014 Census township totals), critical infrastructure (OSM: hospitals, schools, shelters, roads), built-up area (GHSL/WorldCover).
 - **Vulnerability (V):** aggregate socioeconomic indicators (national statistics by district), age composition where reliable aggregate data exists, infrastructure quality proxies (road density).
 
 Weights will be set **transparently and tested via sensitivity analysis** (equal weights vs. weighting variants). The final index uses a justified normalization (e.g., min–max or rank-based), **not arbitrary thresholds**. Risk categories are described relative to the observed distribution (e.g., percentile bands) and clearly labeled as analytic classes, not engineering flood zones.
 
 ## 3. Analytical pipeline
 
-1. **Acquisition** — global rasters (IMERG, GFD, Copernicus DEM, WorldPop, WorldCover, JRC water, OSM) + local validation data.
+1. **Acquisition** — global rasters (IMERG, GFD, Copernicus DEM, WorldCover, JRC water, OSM) + official census + local validation data.
 2. **Cleaning & quality checks** — missing values, duplicates, invalid dates/coords, unit consistency, outlier review. Every transformation documented (see data-quality pipeline in the master prompt).
 3. **Exploratory analysis** — monthly/yearly rainfall, extreme rainfall (e.g., 95th percentile thresholds), flood frequency, seasonal patterns, spatial hotspots.
 4. **Statistical analysis** — descriptive stats, correlation (rainfall–flood), seasonal comparisons, trend where data permits. Correlations reported as associations, never as causation.

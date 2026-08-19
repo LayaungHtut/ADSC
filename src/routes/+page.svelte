@@ -66,7 +66,7 @@
 		value={String(riskSummary.length)}
 		sub="45 townships of Yangon Region"
 	/>
-	<KpiCard label="Population" value={formatInt(totalPop)} sub="modelled residents (Kontur, 2023)" />
+	<KpiCard label="Population" value={formatInt(totalPop)} sub="2014 Census residents (official)" />
 	<KpiCard label="Mean risk score" value={formatDec(meanRisk)} sub="0-100 composite index" />
 	<KpiCard
 		label="In highest risk class"

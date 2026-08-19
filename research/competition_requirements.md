@@ -63,6 +63,17 @@ Source: https://aseandse.org/judging-criteria/ — `CONFIRMED` current cycle.
 | Innovation | 15% | Originality, Creativity, Future-focus, Integration of AI & digital technology | Risk-scoring framework, ML classification (if supported), interactive digital decision-support prototype, scenario tool |
 | Presentation Delivery | 15% | Clarity, Defense (technical/logic Q&A), Professionalism | Prepare judge Q&A pack; rehearse defense |
 
+## 5b. SAC access & tooling (from official training material)
+
+| Item | Value | Source | Status |
+|---|---|---|---|
+| SAC tenant (AP region) | https://aseandse.ap11.hcs.cloud.sap/ | SAC Training Manual 2024 (local: `D:/SAC/SAC Training Manual 2024.pdf`) | `CONFIRMED` (2024 manual; verify with 2026 credentials) |
+| Login | Username/password provided by ASEAN Foundation; one account per team; use Chrome (incognito recommended) | same | `CONFIRMED` |
+| Model workflow | Modeler → Start with data → import CSV/XLSX → review measure/dimension classification → exception aggregation (`Last` over `date` for running totals) → save under `Public > [Country] > [University] > model` | same | `CONFIRMED` |
+| Story workflow | Stories → Create New → Responsive → **Classic Design Experience** → insert tiles → input controls → styling | same | `CONFIRMED` — Classic Design is mandatory to follow the manual |
+| Smart Discovery | Target measure + Entity dimension → Key Influencers + Simulation pages | same | `CONFIRMED` — usable on our risk model (target `risk_score`, entity `township`) |
+| Training dataset | `ADSE Dataset for Data Modeling 2024` (COVID/OWID) — used to practise modeling; **no Myanmar rows**, so our project imports its own real data | same | `CONFIRMED` — do not rely on it for Myanmar data |
+
 ## 6. Assessment & advancement flow
 
 | Stage | Source | Interpretation | Consequence |

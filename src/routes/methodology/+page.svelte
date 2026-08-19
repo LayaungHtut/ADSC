@@ -86,7 +86,7 @@
 				<tr>
 					<td class="py-2 font-medium">Vulnerability inputs</td>
 					<td class="py-2 text-slate-600">
-						Share of children under 15 and elderly over 65 (district-level from WorldPop ADM2)
+						Share of children under 15 and elderly over 65 (2014 Census, township level)
 					</td>
 				</tr>
 			</tbody>

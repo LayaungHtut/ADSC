@@ -14,8 +14,7 @@ Status: living document.
   locations, and official event archives.
 - No names, addresses of individuals, household records, or any personally
   identifiable information are used or stored.
-- Population figures are **modelled grid estimates** (Kontur, WorldPop), never
-  household-level census microdata.
+- Population figures are **official 2014 Census township totals** (DoP / MIMU); model-based grid estimates are not used for headline numbers. No household-level census microdata is used.
 
 ## 2. Aggregate data only
 

@@ -74,6 +74,67 @@ def export_flood_events() -> pd.DataFrame:
     return out
 
 
+def export_flood_events_detail() -> pd.DataFrame:
+    """Per-event DFO records (real observed events, Dartmouth Flood Observatory)."""
+    df = pd.read_csv(DFO)
+    df = df[df["Country"].astype(str).str.contains("Myanmar|Burma", case=False, na=False)].copy()
+    df["start_date"] = pd.to_datetime(df["Start Date"], errors="coerce")
+    df["end_date"] = pd.to_datetime(df["End Date"], errors="coerce")
+    df = df.dropna(subset=["start_date"])
+    rename = {"﹟": "dfo_id", "Glide ﹟": "glide_number"}
+    out = df.rename(columns=rename)[
+        ["dfo_id", "glide_number", "start_date", "end_date", "Country", "Main Cause", "Severity", "Fatalities", "Displaced", "Area (km²)", "Source"]
+    ].copy()
+    out.columns = [
+        "dfo_id",
+        "glide_number",
+        "start_date",
+        "end_date",
+        "country",
+        "main_cause",
+        "severity",
+        "fatalities",
+        "displaced",
+        "area_km2",
+        "source",
+    ]
+    out["in_yangon_documented_year"] = out["start_date"].dt.year.isin(DOCUMENTED_FLOOD_YEARS).astype(int)
+    out = out.sort_values("start_date")
+    out.to_csv(DATA_SAC / "sac_flood_events_detail.csv", index=False)
+    return out
+
+
+def export_yangon_flood_events() -> pd.DataFrame:
+    """Documented Yangon Region flood events with their published sources.
+
+    Each year listed here corresponds to at least one major flood reported in
+    Yangon Region in the peer-reviewed / agency literature (see
+    `floodresilience/config.py` DOCUMENTED_YANGON_FLOOD_YEARS for citations).
+    """
+    docs = [
+        ("1988", "PIAHS 386 (2024) RRI flood study"),
+        ("1991", "PIAHS 386 (2024) RRI flood study"),
+        ("1997", "PIAHS 386 (2024) RRI flood study"),
+        ("2002", "PIAHS 386 (2024) RRI flood study"),
+        ("2004", "PIAHS 386 (2024) RRI flood study"),
+        ("2007", "PIAHS 386 (2024) RRI flood study"),
+        ("2008", "Sritarapipat (2017) urban-growth study (incl. Cyclone Nargis)"),
+        ("2010", "Sritarapipat (2017) urban-growth study"),
+        ("2013", "Sritarapipat (2017) urban-growth study"),
+        ("2014", "PIAHS 386 (2024) + Sritarapipat (2017)"),
+        ("2015", "Sritarapipat (2017) urban-growth study"),
+        ("2017", "OCHA 2017 monsoon update"),
+        ("2019", "DFO record + monsoon flooding reports"),
+        ("2020", "UNOSAT Sentinel-1 surface-water mapping, Aug 2020"),
+    ]
+    out = pd.DataFrame(docs, columns=["year", "source"])
+    out["has_dfo_event_myanmar"] = out["year"].astype(int).isin(
+        export_flood_events_detail()["start_date"].dt.year
+    )
+    out.to_csv(DATA_SAC / "sac_yangon_flood_events.csv", index=False)
+    return out
+
+
 def export_population_exposure() -> pd.DataFrame:
     feat = pd.read_csv(FEATURES)
     out = feat[["tship_code", "township", "district", "pop_est", "area_km2"]].copy()
@@ -104,6 +165,8 @@ def main() -> None:
     print(export_risk_by_area().shape, "sac_risk_by_area.csv")
     print(export_rainfall_timeseries().shape, "sac_rainfall_timeseries.csv")
     print(export_flood_events().shape, "sac_flood_events.csv")
+    print(export_flood_events_detail().shape, "sac_flood_events_detail.csv")
+    print(export_yangon_flood_events().shape, "sac_yangon_flood_events.csv")
     print(export_population_exposure().shape, "sac_population_exposure.csv")
     print(export_infrastructure_exposure().shape, "sac_infrastructure_exposure.csv")
     print(export_risk_factors().shape, "sac_risk_factors.csv")

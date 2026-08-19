@@ -60,7 +60,7 @@ type, the dataset and columns to bind, and the message to convey.
 | Item | Value |
 |---|---|
 | SAC chart | **Scatter plot** |
-| Dataset | `sac_risk_factors.csv` |
+| Dataset | `sac_risk_by_area.csv` (has both `elev_mean_m` and `risk_100`) |
 | Axis X | `elev_mean_m` |
 | Axis Y | `risk_100` |
 | Color | `district` |
@@ -75,6 +75,41 @@ type, the dataset and columns to bind, and the message to convey.
 | Dimensions | `township` |
 | Measures | `risk_100`, `pop_est`, `schools`, `health_facilities` |
 | Message | Priority list for early-warning and infrastructure hardening |
+
+## SAC techniques to apply (from the official SAC Training Manual 2024)
+
+### Input controls (live filtering)
+Add a page **Input Control** on the Risk and Exposure pages, dimension =
+`district` (East / North / South / West) and `risk_class`. Judges can then
+filter to a district live. Resize the control so all options are visible.
+
+### Ranking and exclusion
+Use **Rank > township > Top N** (e.g., Top 10 risk) instead of plotting all 45
+rows, and **Exclude** the "All/Total" aggregate members so charts stay honest.
+
+### Calculated measures
+Create SAC calculated measures where a ratio tells the story better:
+- **Share of population in the top risk class** =
+  `SUM([sac_risk_by_area.csv:pop_est] WHERE risk_class = 5) /
+  SUM([sac_risk_by_area.csv:pop_est])` — 35.3%.
+- **Facilities per 100k people** already exist in
+  `sac_infrastructure_exposure.csv` (`schools_per_100k`, `health_per_100k`).
+
+### Automatic forecast (clearly labeled as a model exercise)
+On the rainfall **Time Series** tile, use **Add > Forecast > Automatic
+Forecast**. Label the tile "illustrative model — not a prediction" so judges
+cannot mistake the forecast for an observed claim.
+
+### Smart Discovery (AI — key influencers of risk)
+Use **Smart Discovery** on the risk model:
+- **Target**: `risk_score` (or `risk_100`) — the measure to explain.
+- **Entity**: `township` — the dimension whose variation is explained.
+- **Expected output**: a Key Influencers page ranking which indicators
+  (elevation, rainfall, population density, age shares) most associate with
+  higher risk.
+- **Honesty rule**: Smart Discovery output is **association, not causation** —
+  state this in the tile footnote and in the defense
+  (`outputs/reports/judge_questions.md`, Q28).
 
 ## Design rules
 

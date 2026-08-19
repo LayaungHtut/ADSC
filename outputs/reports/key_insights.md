@@ -2,28 +2,28 @@
 
 Automated analytical summary. Each insight reports metric, value, comparison, source, interpretation and limitation.
 
-Generated: 2026-08-18T08:54:29+00:00
+Generated: 2026-08-19T00:00:00+00:00 (regenerated after census-data update)
 
 ## 1. Highest-risk township
 - **Metric**: risk_100
-- **Value**: 56.8
-- **Comparison**: vs Yangon mean 41.6
+- **Value**: 58.3
+- **Comparison**: vs Yangon mean 42.5
 - **Source**: outputs/tables/risk_scores.csv
-- **Interpretation**: Thongwa (South) ranks highest under the default hazard-exposure-vulnerability weighting; it combines high population, dense critical facilities and strong rainfall exposure.
+- **Interpretation**: Kayan (South) ranks highest under the default hazard-exposure-vulnerability weighting; it combines high population, dense critical facilities and strong rainfall exposure.
 - **Limitation**: Ranking depends on documented weights; see risk_sensitivity.csv.
 
 ## 2. Township with largest population
 - **Metric**: pop_est (persons)
-- **Value**: 773,198
-- **Comparison**: of Yangon total 8,316,018
-- **Source**: sac_population_exposure.csv (Kontur H3, area-weighted)
+- **Value**: 687,867
+- **Comparison**: of Yangon total 7,360,703
+- **Source**: sac_population_exposure.csv (2014 Census, official township totals)
 - **Interpretation**: Hlaingtharya hosts the largest resident population among the 45 Yangon townships.
-- **Limitation**: Kontur population is a modeled estimate (Nov 2023), not census.
+- **Limitation**: Census is 2014 vintage; population may have grown since.
 
 ## 3. Population in highest-risk class
 - **Metric**: pop_est (persons)
-- **Value**: 2,604,699
-- **Comparison**: 31.3% of Yangon population
+- **Value**: 2,599,370
+- **Comparison**: 35.3% of Yangon population
 - **Source**: risk_scores.csv + sac_population_exposure.csv
 - **Interpretation**: A substantial share of Yangon's population lives in the top risk quintile of townships.
 - **Limitation**: Class boundaries are quintiles of the risk score; they are relative, not absolute safety thresholds.
@@ -38,24 +38,24 @@ Generated: 2026-08-18T08:54:29+00:00
 
 ## 5. Rainfall seasonality
 - **Metric**: mean monthly rainfall (mm)
-- **Value**: peak month 8 (640.8)
-- **Comparison**: wettest months [8, 7, 6, 9], driest [1, 2, 12]
-- **Source**: CHIRPS v2.0 monthly, 1981-2026
+- **Value**: peak month 7 (698.9)
+- **Comparison**: wettest months [7, 8, 6, 9], driest [1, 2, 12]
+- **Source**: CHIRPS v2.0 monthly, 1981-01 .. 2026-07
 - **Interpretation**: Rainfall is strongly seasonal under the southwest monsoon; the wet season aligns with the documented peak flooding period (May-Oct).
 - **Limitation**: Monthly means smooth extreme sub-monthly events that trigger flash floods.
 
 ## 6. Long-term rainfall trend
 - **Metric**: mm/year (OLS)
-- **Value**: -2.3
-- **Comparison**: over 1981-2001
+- **Value**: 15.0
+- **Comparison**: over 1981-2025
 - **Source**: CHIRPS v2.0 monthly aggregated annually (bbox mean)
 - **Interpretation**: OLS slope is small; no strong linear trend is assumed. Interannual variability dominates.
-- **Limitation**: OLS trend over ~45 years is sensitive to endpoints; no significance test applied here.
+- **Limitation**: OLS trend over 44 years is sensitive to endpoints; no significance test applied here.
 
 ## 7. Documented flood years align with wet years
 - **Metric**: annual rainfall (mm)
-- **Value**: 2,760.4
-- **Comparison**: mean of documented flood years 2,760 vs overall mean 2,537
+- **Value**: 2,903.4
+- **Comparison**: mean of documented flood years 2,903 vs overall mean 2,844
 - **Source**: CHIRPS + documented Yangon flood years (PIAHS 2024; Sritarapipat 2017; OCHA 2017; UNOSAT 2020)
 - **Interpretation**: On average, years with documented major Yangon floods were wetter than the long-run mean, supporting rainfall as a hazard driver.
 - **Limitation**: Correlation between rainfall and flood occurrence is not causation; river levels, tides, drainage and land use also matter.
@@ -77,7 +77,7 @@ Generated: 2026-08-18T08:54:29+00:00
 - **Limitation**: Indices are at district level (not township) and cover only 2022+.
 
 ## 10. National flood-events context (DFO)
-- **Metric**: events (1985-2023)
+- **Metric**: events (1990-2023)
 - **Value**: 33
 - **Comparison**: DFO-documented flood events in Myanmar
 - **Source**: Dartmouth Flood Observatory Global Flood Records

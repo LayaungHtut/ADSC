@@ -2,7 +2,7 @@
 
 Automatically generated from the ingestion pipeline. **No rows are ever deleted**; issues are recorded here for the analyst.
 
-Generated: 2026-08-18T08:52:22+00:00
+Generated: 2026-08-19T12:20:27+00:00
 
 ## boundaries_township
 - Rows: 45, Columns: 5
@@ -12,11 +12,11 @@ Generated: 2026-08-18T08:52:22+00:00
 - **outliers_3iqr**: `INFO` — none beyond 3x IQR
 
 ## chirps_monthly_series
-- Rows: 245, Columns: 3
+- Rows: 547, Columns: 3
 - **missing_values**: `PASS` — 0 columns have missing values; max rate 0.0%
 - **duplicates**: `PASS` — 0 duplicate rows
 - **invalid_dates**: `PASS` — 0 invalid dates in month
-- **date_range**: `INFO` — 1981-01-01 00:00:00 .. 2001-05-01 00:00:00
+- **date_range**: `INFO` — 1981-01-01 00:00:00 .. 2026-07-01 00:00:00
 - **infinite_values**: `PASS` — 0 infinite values
 - **outliers_3iqr**: `INFO` — none beyond 3x IQR
 
@@ -27,8 +27,8 @@ Generated: 2026-08-18T08:52:22+00:00
 - **infinite_values**: `PASS` — 0 infinite values
 - **outliers_3iqr**: `INFO` — elev_max_m:2
 
-## kontur_population
-- Rows: 45, Columns: 2
+## census_2014
+- Rows: 45, Columns: 7
 - **missing_values**: `PASS` — 0 columns have missing values; max rate 0.0%
 - **duplicates**: `PASS` — 0 duplicate rows
 - **infinite_values**: `PASS` — 0 infinite values

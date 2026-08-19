@@ -81,7 +81,7 @@
 			</p>
 			<p>
 				Student project for the ASEAN Data Science Explorers 2026 competition. All figures derive
-				from public data (CHIRPS, Copernicus DEM, Kontur, WorldPop, HDX, World Bank/GFDRR, DFO).
+				from public data (CHIRPS, Copernicus DEM, 2014 Census, HDX, World Bank/GFDRR, DFO).
 				This dashboard is a decision-support prototype, not an operational early-warning system.
 			</p>
 		</div>

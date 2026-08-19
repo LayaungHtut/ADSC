@@ -28,7 +28,7 @@
   },
   {
     "dataset": "chirps_monthly_series",
-    "rows": 245,
+    "rows": 547,
     "columns": 3,
     "checks": [
       {
@@ -49,7 +49,7 @@
       {
         "check": "date_range",
         "status": "INFO",
-        "detail": "1981-01-01 00:00:00 .. 2001-05-01 00:00:00"
+        "detail": "1981-01-01 00:00:00 .. 2026-07-01 00:00:00"
       },
       {
         "check": "infinite_values",
@@ -91,9 +91,9 @@
     ]
   },
   {
-    "dataset": "kontur_population",
+    "dataset": "census_2014",
     "rows": 45,
-    "columns": 2,
+    "columns": 7,
     "checks": [
       {
         "check": "missing_values",

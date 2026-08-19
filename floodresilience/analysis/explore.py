@@ -41,6 +41,14 @@ BOUNDARY_SRC = DATA_RAW / "boundaries" / "mmr" / "Yangon_townships.geojson"
 MAJOR_YANGON_FLOOD_YEARS = DOCUMENTED_YANGON_FLOOD_YEARS
 
 
+def _tile_span() -> tuple[str, str]:
+    """First and last YYYYMM present in the CHIRPS tile store."""
+    files = sorted(glob.glob(str(CHIRPS_DIR / "chirps_*.tif")))
+    if not files:
+        return "n/a", "n/a"
+    return Path(files[0]).stem.split("_")[1], Path(files[-1]).stem.split("_")[1]
+
+
 def load_chirps_annual() -> pd.DataFrame:
     files = sorted(glob.glob(str(CHIRPS_DIR / "chirps_*.tif")))
     rows = []
@@ -73,19 +81,21 @@ def chart_rainfall_climatology() -> None:
         by_month[m].append(float(np.nanmean(a)))
     clim = {m: float(np.mean(v)) for m, v in by_month.items() if v}
     months = list(range(1, 13))
+    first, last = _tile_span()
     fig, ax = plt.subplots(figsize=(8, 4.5))
     ax.bar(months, [clim[m] for m in months], color="#2563eb")
     ax.axvspan(5.5, 9.5, color="orange", alpha=0.12, label="Jun-Sep (wet season)")
     ax.set_xticks(months)
     ax.set_xticklabels(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
     ax.set_ylabel("Mean monthly rainfall (mm)")
-    ax.set_title("Yangon Region rainfall climatology 1981-2026 (CHIRPS v2.0)")
+    ax.set_title(f"Yangon Region rainfall climatology {first[:4]}-{last[:4]} (CHIRPS v2.0)")
     ax.legend()
     fig_save(fig, OUTPUT_CHARTS / "rainfall_climatology.png")
 
 
 def chart_rainfall_trend() -> None:
     ann = load_chirps_annual()
+    y0, y1 = int(ann["year"].min()), int(ann["year"].max())
     fig, ax = plt.subplots(figsize=(11, 4.5))
     ax.bar(ann["year"], ann["monthly"], color="#93c5fd")
     for y in MAJOR_YANGON_FLOOD_YEARS:
@@ -93,11 +103,11 @@ def chart_rainfall_trend() -> None:
             ax.annotate(str(y), (y, ann.loc[ann["year"] == y, "monthly"].values[0]),
                         xytext=(0, 4), textcoords="offset points", ha="center", fontsize=6, color="#dc2626")
     mean = ann["monthly"].mean()
-    ax.axhline(mean, color="#1e3a8a", ls="--", lw=1, label=f"1981-2025 mean ({mean:.0f} mm)")
+    ax.axhline(mean, color="#1e3a8a", ls="--", lw=1, label=f"{y0}-{y1} mean ({mean:.0f} mm)")
     z = np.polyfit(ann["year"], ann["monthly"], 1)
     ax.plot(ann["year"], np.polyval(z, ann["year"]), color="#dc2626", lw=1.5, label=f"OLS trend ({z[0]:.1f} mm/yr)")
     ax.set_xlabel("Year"); ax.set_ylabel("Annual rainfall (mm)")
-    ax.set_title("Yangon Region annual rainfall 1981-2026; annotated years = documented flood years")
+    ax.set_title(f"Yangon Region annual rainfall {y0}-{y1}; annotated years = documented flood years")
     ax.legend()
     fig_save(fig, OUTPUT_CHARTS / "rainfall_annual_trend.png")
 
@@ -109,10 +119,11 @@ def chart_dfo_myanmar() -> None:
     df = df.dropna(subset=["Start Date"])
     df["year"] = df["Start Date"].dt.year
     counts = df.groupby("year").size()
+    y0, y1 = int(df["year"].min()), int(df["year"].max())
     fig, ax = plt.subplots(figsize=(9, 4.5))
     ax.bar(counts.index, counts.values, color="#34d399")
     ax.set_xlabel("Year"); ax.set_ylabel("Flood events in Myanmar (DFO)")
-    ax.set_title("Dartmouth Flood Observatory flood events, Myanmar (1985-2023)")
+    ax.set_title(f"Dartmouth Flood Observatory flood events, Myanmar ({y0}-{y1})")
     fig_save(fig, OUTPUT_CHARTS / "dfo_myanmar_flood_events.png")
 
 
@@ -161,6 +172,7 @@ def make_risk_geojson() -> None:
         feat[["tship_code", "pop_est", "elev_mean_m", "schools", "health_facilities"]], on="tship_code"
     )
     merged = merged[["tship_code", "township", "district", "hazard", "exposure", "vulnerability", "risk_100", "risk_class", "pop_est", "elev_mean_m", "schools", "health_facilities", "geometry"]]
+    merged = merged.merge(feat[["tship_code", "pcode"]], on="tship_code")
     merged = merged.rename(columns={"risk_100": "risk_score"})
     merged.to_file(DATA_PROCESSED / "yangon_township_risk.geojson", driver="GeoJSON")
     print("wrote", DATA_PROCESSED / "yangon_township_risk.geojson")

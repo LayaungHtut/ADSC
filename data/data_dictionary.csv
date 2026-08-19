@@ -1,29 +1,32 @@
 column_name,dataset,type,unit,description,source,transformation,missing_percentage,limitations
-tship_code,yangon_township_features,string,-,Stable synthetic township code (derived from boundary order),geoBoundaries Myanmar ADM3 (45 townships),"generated from boundary order, stripped, string-cast",0.00,"Synthetic code, not the official MIMU P-code"
+tship_code,yangon_township_features,string,-,Stable township key (T01-T45) used by the web app,geoBoundaries Myanmar ADM3 (45 townships),generated from boundary order (stable, fixed),0.00,"UI key; official identifier is the MIMU P-code in pcode"
 township,yangon_township_features,string,-,Township name (title case),geoBoundaries Myanmar ADM3,title-cased,0.00,-
-district,yangon_township_features,string,-,Yangon Region district (ADM2),geoBoundaries Myanmar ADM2,"assigned by representative point, title-cased",0.00,"Four districts: East, North, South, West Yangon"
-district_code,yangon_township_features,string,-,Official Myanmar district (ADM2) code,geoBoundaries Myanmar ADM2,"stripped, string-cast",0.00,-
-rain_annual_mean_mm,yangon_township_features,float,mm/year,Mean annual rainfall from the complete-years CHIRPS series,"CHIRPS v2.0 monthly (UCSB Climate Hazards Center), 1981-2001","zonal mean per township, complete years only (12 months present)",0.00,~5.5 km grid; bbox-level zonal aggregation
+district,yangon_township_features,string,-,Yangon Region district (ADM2),geoBoundaries Myanmar ADM2,assigned by representative point, title-cased,0.00,Four districts: East, North, South, West Yangon
+district_code,yangon_township_features,string,-,Official Myanmar district (ADM2) code,geoBoundaries Myanmar ADM2 / MIMU,stripped, string-cast,0.00,-
+rain_annual_mean_mm,yangon_township_features,float,mm/year,Mean annual rainfall from the complete-years CHIRPS series,CHIRPS v2.0 monthly (UCSB Climate Hazards Center), 1981-01 .. 2026-07,zonal mean per township, complete years only (12 months present),0.00,~5.5 km grid; bbox-level zonal aggregation
 rain_annual_last5_mean_mm,yangon_township_features,float,mm/year,Mean annual rainfall over the last 5 complete years,CHIRPS v2.0 monthly,mean of last 5 annual totals,0.00,Only if >=5 complete years available
-rain_wet_season_share,yangon_township_features,float,fraction 0-1,Share of mean annual rainfall falling in wet-season months (Jun-Sep),CHIRPS v2.0 monthly,sum(wet-season monthly means) / sum(all monthly means),0.00,"Wet-season window (6,7,8,9) is a simplification of the monsoon pattern"
-rain_extreme_months,yangon_township_features,int,count,Number of months with rainfall >= 95th percentile of the township series,CHIRPS v2.0 monthly,count of months >= p95,0.00,"Threshold is series-specific (relative, not absolute)"
+rain_wet_season_share,yangon_township_features,float,fraction 0-1,Share of mean annual rainfall falling in wet-season months (Jun-Sep),CHIRPS v2.0 monthly,sum(wet-season monthly means) / sum(all monthly means),0.00,Wet-season window (6,7,8,9) is a simplification of the monsoon pattern
+rain_extreme_months,yangon_township_features,int,count,Number of months with rainfall >= 95th percentile of the township series,CHIRPS v2.0 monthly,count of months >= p95,0.00,Threshold is series-specific (relative, not absolute)
 rain_annual_trend_mm_yr,yangon_township_features,float,mm/year,OLS slope of annual rainfall over time,CHIRPS v2.0 monthly,np.polyfit degree-1 on complete annual totals,0.00,Descriptive only; no significance test; endpoint sensitive
 rain_annual_trend_pct_yr,yangon_township_features,float,%/year,OLS slope normalized by the annual mean,CHIRPS v2.0 monthly,slope / annual_mean * 100,0.00,Same as trend slope
-rain_p95_monthly_mm,yangon_township_features,float,mm/month,95th percentile of monthly rainfall,CHIRPS v2.0 monthly,"nanpercentile(s, 95)",0.00,-
-rain_total_months,yangon_township_features,int,count,Number of months with valid rainfall in the series,CHIRPS v2.0 monthly,count of non-null months,0.00,245 months (1981-2001-05) available for Yangon bbox
+rain_p95_monthly_mm,yangon_township_features,float,mm/month,95th percentile of monthly rainfall,CHIRPS v2.0 monthly,nanpercentile(s, 95),0.00,-
+rain_total_months,yangon_township_features,int,count,Number of months with valid rainfall in the series,CHIRPS v2.0 monthly,count of non-null months,0.00,547 months (1981-01 .. 2026-07) available for Yangon bbox
 elev_mean_m,yangon_township_features,float,m,Mean elevation within the township,Copernicus DEM GLO-30 (30 m DSM),zonal mean over mosaicked DEM tiles,0.00,DSM includes vegetation/buildings; coastal sea gaps read ~0
 elev_min_m,yangon_township_features,float,m,Minimum elevation within the township,Copernicus DEM GLO-30,zonal min,0.00,Values below 0 indicate below-sea-level terrain
 elev_max_m,yangon_township_features,float,m,Maximum elevation within the township,Copernicus DEM GLO-30,zonal max,0.00,-
-slope_mean_pct,yangon_township_features,float,%,Mean terrain slope in percent,Copernicus DEM GLO-30 (derived),"gradient-based slope from DEM, zonal mean",0.00,Percent slope; computed from DSM
-pop_est,yangon_township_features,float,persons,Modelled resident population (area-weighted),"Kontur population grid (H3, Nov 2023)",area-weighted intersection of H3 hexagons with township polygon,0.00,"Model estimate, not census"
+slope_mean_pct,yangon_township_features,float,%,Mean terrain slope in percent,Copernicus DEM GLO-30 (derived),gradient-based slope from DEM, zonal mean,0.00,Percent slope; computed from DSM
+pcode,yangon_township_features,string,-,Official MIMU township P-code (MMR013001-MMR013045),"MIMU / Open Development Myanmar (2014 Census township table)",joined by township name to the census table,0.00,Official national code used by government agencies
+pop_est,yangon_township_features,float,persons,Total resident population (official census township total),"2014 Myanmar Population and Housing Census (Department of Population, via MIMU / Open Development Myanmar)",joined by township name (pop_t),0.00,2014 vintage; population may have grown since
+child_share,yangon_township_features,float,fraction 0-1,Share of population aged 0-14,"2014 Myanmar Census (pop_0_14 / pop_t)",township-level ratio from census age columns,0.00,2014 vintage
+elderly_share,yangon_township_features,float,fraction 0-1,Share of population aged 65+,"2014 Myanmar Census (pop_65ab / pop_t)",township-level ratio from census age columns,0.00,2014 vintage
+pop_urban,yangon_township_features,float,persons,Urban population,"2014 Myanmar Census (pop_u)",joined by township name,0.00,2014 vintage
+pop_rural,yangon_township_features,float,persons,Rural population,"2014 Myanmar Census (pop_r)",joined by township name,0.00,2014 vintage
 schools,yangon_township_features,int,facilities,Count of school facilities inside the township,HDX / OSM school facilities (Myanmar),point-in-polygon count,0.00,OSM-derived; may undercount private/informal schools
 health_facilities,yangon_township_features,int,facilities,Count of health facilities inside the township,HDX / HOTOSM health facilities (Myanmar),point-in-polygon count,0.00,OSM-derived; may undercount
-rfh_mean,yangon_township_features,float,index,Mean rainfall-flood hazard index (recent),World Bank / GFDRR subnational rainfall indicators (ADM2),"grouped by district, mean over time",0.00,District-level only (all townships in a district share the value)
-r1h_mean,yangon_township_features,float,index,Mean 1-hour rainfall index (recent),World Bank / GFDRR subnational rainfall indicators,"grouped by district, mean over time",0.00,District-level only
-r3h_mean,yangon_township_features,float,index,Mean 3-hour rainfall index (recent),World Bank / GFDRR subnational rainfall indicators,"grouped by district, mean over time",0.00,District-level only
+rfh_mean,yangon_township_features,float,index,Mean rainfall-flood hazard index (recent),World Bank / GFDRR subnational rainfall indicators (ADM2),grouped by district, mean over time,0.00,District-level only (all townships in a district share the value)
+r1h_mean,yangon_township_features,float,index,Mean 1-hour rainfall index (recent),World Bank / GFDRR subnational rainfall indicators,grouped by district, mean over time,0.00,District-level only
+r3h_mean,yangon_township_features,float,index,Mean 3-hour rainfall index (recent),World Bank / GFDRR subnational rainfall indicators,grouped by district, mean over time,0.00,District-level only
 rfh_p95,yangon_township_features,float,index,95th percentile of the rainfall-flood hazard index,World Bank / GFDRR subnational rainfall indicators,nanpercentile 95 per district,0.00,District-level only
 n_obs,yangon_township_features,int,count,Number of observations contributing to district rainfall indices,World Bank / GFDRR subnational rainfall indicators,count,0.00,-
-child_share,yangon_township_features,float,fraction 0-1,Share of population aged 0-14,"WorldPop ADM2 (UN-adjusted, 2020)","sum(T_00_04, T_05_09, T_10_14) / T_TL per district",0.00,District-level only; census-based aggregation
-elderly_share,yangon_township_features,float,fraction 0-1,Share of population aged 65+,"WorldPop ADM2 (UN-adjusted, 2020)","sum(T_65_69, T_70_74, T_75Plus) / T_TL per district",0.00,District-level only
 area_km2,yangon_township_features,float,km²,Township area,Admin boundaries (geometry),area in EPSG:32647 / 1e6,0.00,-
-pop_density,yangon_township_features,float,persons/km²,Population density,Kontur population grid + geometry,pop_est / area_km2,0.00,Derived from modelled population
+pop_density,yangon_township_features,float,persons/km²,Population density,2014 Census population + geometry,pop_est / area_km2,0.00,Derived from official census population

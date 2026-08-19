@@ -15,14 +15,9 @@
 			note: 'Tiles lat 14-18 N × lon 93-97 E via AWS/NASA Earthdata'
 		},
 		{
-			name: 'Kontur population grid',
-			use: 'Population & density',
-			note: 'H3 hexagons, Nov 2023; area-weighted to townships'
-		},
-		{
-			name: 'WorldPop ADM2 (UN adjusted)',
-			use: 'Age structure (children/elderly)',
-			note: '2020 population counts by 5-year age band'
+			name: '2014 Myanmar Census (DoP / MIMU)',
+			use: 'Population, density, age structure, urban/rural',
+			note: 'Official township totals; MIMU P-codes'
 		},
 		{
 			name: 'HDX / OSM facility data',
@@ -116,9 +111,9 @@
 <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
 	<h2 class="mb-3 text-lg font-semibold">Quality control</h2>
 	<p class="text-sm text-slate-600">
-		The processed township dataset (45 rows × 28 columns) contains zero missing values. A full
+		The processed township dataset (45 rows × 31 columns) contains zero missing values. A full
 		data-quality report covering range checks, completeness and spatial coverage is generated with
-		the pipeline. WorldPop age shares and the World Bank rainfall indices are district-level and
-		documented as such in every report and on this dashboard.
+		the pipeline. Population and age composition are official 2014 Census township figures; only
+		the World Bank rainfall indices are district-level, documented as such on this dashboard.
 	</p>
 </section>

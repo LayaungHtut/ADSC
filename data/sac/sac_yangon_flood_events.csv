@@ -1,0 +1,15 @@
+year,source,has_dfo_event_myanmar
+1988,PIAHS 386 (2024) RRI flood study,False
+1991,PIAHS 386 (2024) RRI flood study,True
+1997,PIAHS 386 (2024) RRI flood study,True
+2002,PIAHS 386 (2024) RRI flood study,True
+2004,PIAHS 386 (2024) RRI flood study,False
+2007,PIAHS 386 (2024) RRI flood study,True
+2008,Sritarapipat (2017) urban-growth study (incl. Cyclone Nargis),True
+2010,Sritarapipat (2017) urban-growth study,True
+2013,Sritarapipat (2017) urban-growth study,True
+2014,PIAHS 386 (2024) + Sritarapipat (2017),False
+2015,Sritarapipat (2017) urban-growth study,True
+2017,OCHA 2017 monsoon update,False
+2019,DFO record + monsoon flooding reports,True
+2020,"UNOSAT Sentinel-1 surface-water mapping, Aug 2020",True

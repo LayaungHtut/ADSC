@@ -15,7 +15,9 @@ import type { FeatureRow } from './types';
  * Vulnerability = 0.60*norm(child_share) + 0.40*norm(elderly_share)
  *
  * Scenarios perturb the RAW indicator values (not the normalized scores), then
- * re-run the full pipeline, which keeps behaviour honest and interpretable.
+ * re-run the full pipeline. Normalization anchors to the observed (baseline)
+ * min/max of each indicator, so uniform shocks (e.g. +20% rainfall everywhere)
+ * genuinely move the scores instead of being erased by re-normalization.
  *
  * IMPORTANT: Scenario outputs are illustrative model exercises, NOT forecasts.
  */
@@ -48,6 +50,13 @@ function minmax(values: number[]): number[] {
 	return values.map((v) => (v - lo) / (hi - lo));
 }
 
+function minmaxAnchored(values: number[], reference: number[]): number[] {
+	const lo = Math.min(...reference);
+	const hi = Math.max(...reference);
+	if (hi === lo) return values.map(() => 0.5);
+	return values.map((v) => (v - lo) / (hi - lo));
+}
+
 function quantileClass(scores: number[]): number[] {
 	const sorted = [...scores].sort((a, b) => a - b);
 	return scores.map((s) => {
@@ -70,28 +79,23 @@ function applyScenario(row: FeatureRow, s: ScenarioInputs): FeatureRow {
 	return r;
 }
 
-function riskScore(
-	rows: FeatureRow[]
-): { hazard: number; exposure: number; vulnerability: number; risk: number }[] {
+function riskScore(rows: FeatureRow[], reference: FeatureRow[] = rows): { hazard: number; exposure: number; vulnerability: number; risk: number }[] {
 	const get = (f: (r: FeatureRow) => number) => rows.map(f);
-	const norm = {
-		elev: minmax(get((r) => r.elev_mean_m)),
-		rain: minmax(get((r) => r.rain_annual_mean_mm)),
-		extreme: minmax(get((r) => r.rain_extreme_months)),
-		rfh: minmax(get((r) => r.rfh_mean)),
-		pop: minmax(get((r) => r.pop_est)),
-		density: minmax(get((r) => r.pop_density)),
-		schools: minmax(get((r) => r.schools)),
-		health: minmax(get((r) => r.health_facilities)),
-		child: minmax(get((r) => r.child_share)),
-		elderly: minmax(get((r) => r.elderly_share))
-	};
+	const ref = (f: (r: FeatureRow) => number) => reference.map(f);
+	const norm = (f: (r: FeatureRow) => number) => minmaxAnchored(get(f), ref(f));
 	return rows.map((_, i) => {
 		const hazard =
-			0.35 * (1 - norm.elev[i]) + 0.3 * norm.rain[i] + 0.2 * norm.extreme[i] + 0.15 * norm.rfh[i];
+			0.35 * (1 - norm((r) => r.elev_mean_m)[i]) +
+			0.3 * norm((r) => r.rain_annual_mean_mm)[i] +
+			0.2 * norm((r) => r.rain_extreme_months)[i] +
+			0.15 * norm((r) => r.rfh_mean)[i];
 		const exposure =
-			0.35 * norm.pop[i] + 0.25 * norm.density[i] + 0.2 * norm.schools[i] + 0.2 * norm.health[i];
-		const vulnerability = 0.6 * norm.child[i] + 0.4 * norm.elderly[i];
+			0.35 * norm((r) => r.pop_est)[i] +
+			0.25 * norm((r) => r.pop_density)[i] +
+			0.2 * norm((r) => r.schools)[i] +
+			0.2 * norm((r) => r.health_facilities)[i];
+		const vulnerability =
+			0.6 * norm((r) => r.child_share)[i] + 0.4 * norm((r) => r.elderly_share)[i];
 		return {
 			hazard,
 			exposure,
@@ -103,7 +107,10 @@ function riskScore(
 
 export function runScenario(inputs: ScenarioInputs): ScenarioResultRow[] {
 	const baseline = riskScore(features);
-	const scenario = riskScore(features.map((r) => applyScenario(r, inputs)));
+	const scenario = riskScore(
+		features.map((r) => applyScenario(r, inputs)),
+		features
+	);
 
 	const baseScores = baseline.map((s) => s.risk * 100);
 	const scenScores = scenario.map((s) => s.risk * 100);

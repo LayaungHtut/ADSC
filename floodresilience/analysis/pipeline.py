@@ -6,11 +6,10 @@ Stages:
   2. CHIRPS monthly rainfall -> zonal series (1981-2026) + derived climate
      indicators (annual total, wet-season share, extreme-month count, trend).
   3. Copernicus DEM -> elevation stats (mean/min/max) + slope.
-  4. Population: Kontur H3 (current) area-weighted.
+  4. Population + age shares: official 2014 Myanmar Census township totals
+     (DoP / MIMU), township level — replaces modelled Kontur / WorldPop data.
   5. Infrastructure: schools + health facilities counts (HDX / OSM, Myanmar).
   6. Flood-related rainfall indicators (World Bank / GFDRR, ADM2).
-  7. Age shares (children/elderly) from WorldPop ADM2 (district level).
-  8. Persist `data/processed/yangon_township_features.parquet`.
 
 Every derived value is traceable to the raw source; no values are fabricated.
 """
@@ -43,6 +42,7 @@ CHIRPS_DIR = DATA_INTERMEDIATE / "rainfall" / "chirps_yangon"
 DEM_FILES = sorted((DATA_RAW / "dem").glob("*.tif"))
 KONTUR = DATA_RAW / "population" / "kontur_population_MM_20231101.gpkg"
 ADMPOP = DATA_RAW / "population" / "mmr_admpop_adm2_2023.csv"
+CENSUS = DATA_RAW / "population" / "mmr_2014_census_townships.csv"
 WB_RAINFALL = DATA_RAW / "rainfall_indicator" / "mmr-rainfall-subnat-5ytd.csv"
 EDU_GEOJSON = DATA_RAW / "education" / "mmr" / "unzipped" / "education_facilities.geojson"
 HEALTH_GEOJSON = DATA_RAW / "health" / "mmr" / "unzipped" / "health_facilities.geojson"
@@ -214,35 +214,37 @@ def dem_stats(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def population_exposure(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
-    """Area-weighted Kontur H3 population per township."""
-    hex_gdf = gpd.read_file(KONTUR)
-    # Reproject to boundaries CRS (WGS84) for intersection.
-    hex_wgs = hex_gdf.to_crs(CRS_WGS84)
-    joined = gpd.sjoin(hex_wgs, boundaries[["geometry"]], how="inner", predicate="intersects")
-    hex_ids = joined.index.unique()
-    sub = hex_wgs.loc[hex_ids].copy()
+def census_indicators(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
+    """Official 2014 Myanmar Census township figures (Department of Population).
 
-    # Ensure equal-area projection for area fractions.
-    b_utm = boundaries.copy().to_crs(CRS_UTM)
-    sub_utm = sub.to_crs(CRS_UTM)
+    Replaces the previous Kontur H3 population estimate and the WorldPop ADM2
+    age shares with the census totals released by MIMU / DoP:
+      - pop_est      : total population (pop_t), township level
+      - child_share  : share aged 0-14 (pop_0_14 / pop_t), township level
+      - elderly_share: share aged 65+ (pop_65ab / pop_t), township level
+      - pcode        : official MIMU township P-code (MMR013001..MMR013045)
+    Townships are matched by official name; all 45 Yangon townships align.
+    """
+    census = pd.read_csv(CENSUS)
+    census = census[census["pcode_st"].astype(str) == YANGON_ADM1].copy()
+    census["township"] = census["name_ts"].str.strip()
+    census = census[["township", "pcode_ts", "pop_t", "pop_0_14", "pop_65ab", "pop_u", "pop_r"]].copy()
 
-    rows = []
-    for i in range(len(boundaries)):
-        poly = b_utm.geometry.iloc[i]
-        hits = sub_utm[sub_utm.intersects(poly)]
-        if hits.empty:
-            rows.append({"tship_idx": i, "pop_est": 0.0})
-            continue
-        total = 0.0
-        for _, h in hits.iterrows():
-            inter = h.geometry.intersection(poly)
-            if inter.is_empty:
-                continue
-            frac = inter.area / h.geometry.area if h.geometry.area > 0 else 0.0
-            total += float(h["population"]) * frac
-        rows.append({"tship_idx": i, "pop_est": total})
-    return pd.DataFrame(rows)
+    out = boundaries[["tship_code", "township"]].copy()
+    out = out.merge(census, on="township", how="left")
+    missing = out.loc[out["pcode_ts"].isna(), "township"].tolist()
+    if missing:
+        raise ValueError(f"Census has no township match for: {missing}")
+
+    out["pop_est"] = out["pop_t"]
+    out["child_share"] = out["pop_0_14"] / out["pop_t"]
+    out["elderly_share"] = out["pop_65ab"] / out["pop_t"]
+    out["pop_urban"] = out["pop_u"]
+    # Fully urban townships have no rural population; the census table leaves
+    # pop_r blank for them (pop_u == pop_t). Derive it so urban+rural == total.
+    out["pop_rural"] = out["pop_r"].fillna(out["pop_t"] - out["pop_u"])
+    out = out.rename(columns={"pcode_ts": "pcode"})
+    return out[["tship_code", "pcode", "pop_est", "child_share", "elderly_share", "pop_urban", "pop_rural"]]
 
 
 def _count_facilities(boundaries: gpd.GeoDataFrame, src: Path) -> list[int]:
@@ -297,23 +299,12 @@ def wb_rainfall_indicators(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
 
 
 def age_shares(boundaries: gpd.GeoDataFrame) -> pd.DataFrame:
-    """Child (<15) and elderly (65+) population shares per district from WorldPop ADM2."""
-    adm = pd.read_csv(ADMPOP)
-    adm = adm[adm["ADM1_NAME"].astype(str).str.contains("Yangon", case=False, na=False)].copy()
-    adm["district_code"] = adm["ADM2_PCODE"].astype(str).str.strip()
-    child_cols = ["T_00_04", "T_05_09", "T_10_14"]
-    elder_cols = ["T_65_69", "T_70_74", "T_75_79", "T_80_84", "T_85_89", "T_90Plus"]
-    agg2 = adm.groupby("district_code").agg(
-        **{f"sum_{c}": (c, "sum") for c in child_cols + elder_cols + ["T_TL"]}
-    ).reset_index()
-    agg2["child_share"] = agg2[[f"sum_{c}" for c in child_cols]].sum(axis=1) / agg2["sum_T_TL"]
-    agg2["elderly_share"] = agg2[[f"sum_{c}" for c in elder_cols]].sum(axis=1) / agg2["sum_T_TL"]
+    """Deprecated: WorldPop ADM2 (district-level) age estimates.
 
-    out = pd.DataFrame({"tship_idx": range(len(boundaries))})
-    out["district_code"] = boundaries["district_code"].values
-    out = out.merge(agg2[["district_code", "child_share", "elderly_share"]], on="district_code", how="left")
-    out = out.drop(columns=["district_code"])
-    return out
+    Superseded by `census_indicators`, which provides township-level age shares
+    from the 2014 census. Retained only so the public API stays import-safe.
+    """
+    return census_indicators(boundaries)[["tship_code", "child_share", "elderly_share"]]
 
 
 def main() -> None:
@@ -334,9 +325,9 @@ def main() -> None:
     dem = dem_stats(boundaries)
     qc.append(run_qc(dem, "dem_zonal"))
 
-    # 4. Population
-    pop = population_exposure(boundaries)
-    qc.append(run_qc(pop, "kontur_population"))
+    # 4. Population + age shares (2014 census, township level)
+    census = census_indicators(boundaries)
+    qc.append(run_qc(census, "census_2014"))
 
     # 5. Facilities
     fac = facility_counts(boundaries)
@@ -345,21 +336,17 @@ def main() -> None:
     # 6. WB rainfall indicators
     wb = wb_rainfall_indicators(boundaries)
 
-    # 7. Age shares
-    age = age_shares(boundaries)
-
     # Merge
     out = boundaries.drop(columns="geometry").reset_index(drop=True)
     for df, _prefix in [
         (clim, ""),
         (dem, ""),
-        (pop, ""),
+        (census, ""),
         (fac, ""),
         (wb, ""),
-        (age, ""),
     ]:
         df = df.reset_index(drop=True)
-        out = pd.concat([out, df.drop(columns=["tship_idx"], errors="ignore")], axis=1)
+        out = pd.concat([out, df.drop(columns=["tship_idx", "tship_code"], errors="ignore")], axis=1)
 
     # Derived: population density (persons / km^2)
     area_km2 = boundaries.geometry.to_crs(CRS_UTM).area / 1e6

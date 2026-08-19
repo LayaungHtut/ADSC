@@ -54,8 +54,8 @@
 		Yangon Region is one of Myanmar's most flood-exposed areas: the low-lying southern townships
 		along the Yangon and Bago rivers and the delta coast flood during the south-west monsoon
 		(May-October), and the city hosts millions of residents whose daily services are disrupted by
-		recurrent inundation. Because the region's open datasets (CHIRPS, Copernicus DEM, Kontur,
-		WorldPop, HDX, DFO) are publicly traceable, it is an ideal case to prototype a risk framework
+		recurrent inundation. Because the region's open datasets (CHIRPS, Copernicus DEM, the 2014
+		Census, HDX, DFO) are publicly traceable, it is an ideal case to prototype a risk framework
 		that can be scaled across the region. Documented major flood years in our rainfall record —
 		1988, 1997, 2002, 2007, 2013, 2014 and 2020 — confirm the hazard signal is real.
 	</p>

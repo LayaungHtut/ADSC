@@ -28,7 +28,7 @@ identical. This is what makes the approach scalable.
 | Boundaries | 45 townships (ADM3) of Yangon Region (GeoBoundaries) | local + global |
 | Rainfall | CHIRPS v2.0 monthly, 1981-2026, bbox zonal means | CHIRPS (global) |
 | Elevation | Copernicus DEM GLO-30 zonal stats | Copernicus (global) |
-| Population | Kontur H3 area-weighted; WorldPop ADM2 age shares | Kontur / WorldPop (global) |
+| Population | 2014 Census township totals (age structure, urban/rural) | official census per country |
 | Infrastructure | HDX school + health facility point counts | HDX / OSM |
 | Recent rainfall hazard | World Bank / GFDRR subnational indices | WB / GFDRR |
 | Historical flood context | Dartmouth Flood Observatory event archive | DFO |
@@ -43,7 +43,7 @@ Phnom Penh.
 
 - Climate: CHIRPS / GPM IMERG rainfall (global).
 - Geography: Copernicus DEM, ESA WorldCover, JRC water (global).
-- Population: WorldPop / GHSL / Kontur (global, model-based).
+- Population: official national census (township/district level); WorldPop / GHSL / Kontur as model-based fallback where census is unavailable.
 - Infrastructure: OSM / HDX facility data (global, quality varies).
 - Flood history: Global Flood Database (2000-2018) + DFO (1985-present) (global).
 

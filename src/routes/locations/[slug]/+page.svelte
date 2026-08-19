@@ -85,7 +85,7 @@
 	</section>
 
 	<section class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-		<KpiCard label="Population" value={formatInt(row.pop_est)} sub="modelled (Kontur 2023)" />
+		<KpiCard label="Population" value={formatInt(row.pop_est)} sub="2014 Census (official)" />
 		<KpiCard
 			label="Mean elevation"
 			value={`${row.elev_mean_m.toFixed(1)} m`}
@@ -170,8 +170,7 @@
 				</div>
 			</div>
 			<p class="mt-4 text-xs text-slate-400">
-				Children/elderly shares are district-level (WorldPop ADM2), shared by all townships in
-				{row.district}.
+				Children/elderly shares are township-level from the 2014 Census.
 			</p>
 		</section>
 	{/if}
